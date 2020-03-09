@@ -1,0 +1,136 @@
+import groovy.json.JsonOutput
+
+task generateTerraformTFVarsJson {
+    inputs.property("GLOBAL_PREFIX", globalPrefix)
+    inputs.property("STAGE_NAME", stageName)
+    inputs.property("AWS_ACCOUNT_ID", awsAccountId)
+    inputs.property("AWS_ACCESS_KEY", awsAccessKey)
+    inputs.property("AWS_SECRET_KEY", awsSecretKey)
+    inputs.property("AWS_REGION", awsRegion)
+
+    def propertyFile = file("${projectDir}/terraform.tfvars.json")
+
+    outputs.file(propertyFile)
+    doLast {
+        def data = [
+            project_prefix          : "${globalPrefix}.module-repository.${stageName}",
+            stage_name              : stageName,
+            aws_account_id          : awsAccountId,
+            aws_access_key          : awsAccessKey,
+            aws_secret_key          : awsSecretKey,
+            aws_region              : awsRegion,
+        ]
+
+        def json = JsonOutput.toJson(data)
+        def jsonPretty = JsonOutput.prettyPrint(json)
+
+        propertyFile.write(jsonPretty)
+    }
+}
+
+task generateAwsCredentialsJson {
+    inputs.property("AWS_ACCESS_KEY", awsAccessKey)
+    inputs.property("AWS_SECRET_KEY", awsSecretKey)
+    inputs.property("AWS_REGION", awsRegion)
+
+    def awsCredentialsJson = file("aws-credentials.json")
+    outputs.file(awsCredentialsJson)
+
+    doLast {
+        def data = [
+                accessKeyId    : awsAccessKey,
+                secretAccessKey: awsSecretKey,
+                region         : awsRegion
+        ]
+
+        def json = JsonOutput.toJson(data)
+        def jsonPretty = JsonOutput.prettyPrint(json)
+
+        awsCredentialsJson.write(jsonPretty)
+    }
+}
+
+task terraformInit(type: Exec) {
+    dependsOn ":verifyTerraform"
+    inputs.file "main.tf"
+    outputs.upToDateWhen { file(".terraform").exists() }
+    commandLine terraformExecutable
+    args "init"
+}
+
+task terraformValidate(type: Exec) {
+    dependsOn ":verifyTerraform"
+    dependsOn ":build"
+    dependsOn terraformInit
+    dependsOn generateTerraformTFVarsJson
+    commandLine terraformExecutable
+    args "validate"
+}
+
+task terraformPlan(type: Exec) {
+    dependsOn ":verifyTerraform"
+    dependsOn ":build"
+    dependsOn terraformInit
+    dependsOn generateTerraformTFVarsJson
+    commandLine terraformExecutable
+    args "plan"
+}
+
+task terraformApply(type: Exec) {
+    dependsOn ":verifyTerraform"
+    dependsOn ":build"
+    dependsOn terraformInit
+    dependsOn generateTerraformTFVarsJson
+    commandLine terraformExecutable
+    args "apply", "-auto-approve"
+}
+
+task terraformDestroy(type: Exec) {
+    dependsOn ":verifyTerraform"
+    dependsOn terraformInit
+    dependsOn generateTerraformTFVarsJson
+    commandLine terraformExecutable
+    args "destroy", "-force"
+}
+
+task terraformOutput(type: Exec) {
+    dependsOn ":verifyTerraform"
+    mustRunAfter terraformApply
+    inputs.file("terraform.tfstate")
+    outputs.file("terraform.output.json")
+    commandLine terraformExecutable
+    args "output", "-json"
+    doFirst {
+        standardOutput new FileOutputStream("${projectDir}/terraform.output.json")
+    }
+}
+
+task runPostDeployScript(type: Exec) {
+    dependsOn generateAwsCredentialsJson
+    dependsOn terraformOutput
+    dependsOn "post-deploy:npmInstall"
+    inputs.file "terraform.output.json"
+    inputs.file "./post-deploy/src/index.js"
+    inputs.file "./post-deploy/package.json"
+    outputs.upToDateWhen { false }
+    commandLine nodeExecutable
+    args "post-deploy/src/index.js", "${projectDir}/terraform.output.json"
+}
+
+clean {
+    delete "${projectDir}/terraform.output.json"
+    delete "${projectDir}/terraform.tfvars.json"
+    delete "${projectDir}/aws-credentials.json"
+    delete "${projectDir}/repository_files.tf.json"
+    delete "${projectDir}/website_files.tf.json"
+}
+
+task plan {}
+plan.dependsOn(terraformPlan)
+
+task deploy {}
+deploy.dependsOn(terraformApply)
+//deploy.dependsOn(runPostDeployScript)
+
+task destroy {}
+destroy.dependsOn(terraformDestroy)
