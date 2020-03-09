@@ -1,4 +1,5 @@
 include "deployment",
         "deployment:post-deploy",
         "service",
-        "service:api-handler"
+        "service:api-handler",
+        "service:s3-trigger"

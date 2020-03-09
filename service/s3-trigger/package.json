@@ -1,0 +1,25 @@
+{
+    "name": "service-s3-trigger",
+    "version": "0.0.0",
+    "description": "S3 trigger that processes ",
+    "private": true,
+    "engines": {
+        "node": "^10.16.3"
+    },
+    "main": "src/index.js",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "@mcma/api": "0.8.7",
+        "@mcma/aws-api-gateway": "0.8.7",
+        "@mcma/aws-dynamodb": "0.8.7",
+        "@mcma/client": "0.8.7",
+        "@mcma/core": "0.8.7",
+        "@mcma/data": "0.8.7",
+        "aws-sdk": "^2.563.0",
+        "jszip": "^3.2.2"
+    },
+    "devDependencies": {
+        "@types/node": "^12.12.19",
+        "@types/jszip": "^3.1.7"
+    }
+}

@@ -1,3 +1,4 @@
+variable "global_prefix" {}
 variable "project_prefix" {}
 variable "stage_name" {}
 

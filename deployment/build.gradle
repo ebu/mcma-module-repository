@@ -13,12 +13,13 @@ task generateTerraformTFVarsJson {
     outputs.file(propertyFile)
     doLast {
         def data = [
-            project_prefix          : "${globalPrefix}.module-repository.${stageName}",
-            stage_name              : stageName,
-            aws_account_id          : awsAccountId,
-            aws_access_key          : awsAccessKey,
-            aws_secret_key          : awsSecretKey,
-            aws_region              : awsRegion,
+                global_prefix : globalPrefix,
+                stage_name    : stageName,
+                project_prefix: "${globalPrefix}.module-repository.${stageName}",
+                aws_account_id: awsAccountId,
+                aws_access_key: awsAccessKey,
+                aws_secret_key: awsSecretKey,
+                aws_region    : awsRegion,
         ]
 
         def json = JsonOutput.toJson(data)

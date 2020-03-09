@@ -1,6 +1,7 @@
 locals {
-  service_url         = "https://${aws_api_gateway_rest_api.service_api.id}.execute-api.${var.aws_region}.amazonaws.com/${var.stage_name}"
-  service_bucket_name = var.project_prefix
+  service_url                 = "https://${aws_api_gateway_rest_api.service_api.id}.execute-api.${var.aws_region}.amazonaws.com/${var.stage_name}"
+  service_storage_bucket_name = "${var.global_prefix}.${var.aws_region}.${var.stage_name}.module-repository.storage"
+  service_upload_bucket_name  = "${var.global_prefix}.${var.aws_region}.${var.stage_name}.module-repository.upload"
 }
 
 #########################
@@ -31,6 +32,12 @@ resource "aws_iam_policy" "dynamodb_policy" {
   policy      = file("policies/allow-full-dynamodb.json")
 }
 
+resource "aws_iam_policy" "s3_policy" {
+  name        = "${var.project_prefix}.policy-s3"
+  description = "Policy to Access DynamoDB"
+  policy      = file("policies/allow-full-s3.json")
+}
+
 ##################################
 # aws_iam_role : iam_for_exec_lambda
 ##################################
@@ -50,23 +57,62 @@ resource "aws_iam_role_policy_attachment" "service_policy_dynamodb" {
   policy_arn = aws_iam_policy.dynamodb_policy.arn
 }
 
+resource "aws_iam_role_policy_attachment" "service_policy_s3" {
+  role       = aws_iam_role.service.name
+  policy_arn = aws_iam_policy.s3_policy.arn
+}
+
 ##################################
 # aws_dynamodb_table : service_table
 ##################################
 
-resource "aws_s3_bucket" "repository" {
-  bucket        = local.service_bucket_name
+resource "aws_s3_bucket" "service_storage" {
+  bucket        = local.service_storage_bucket_name
   acl           = "private"
   force_destroy = true
 }
 
-resource "aws_s3_bucket_public_access_block" "repository" {
-  bucket = aws_s3_bucket.repository.id
+resource "aws_s3_bucket_public_access_block" "service_storage" {
+  bucket = aws_s3_bucket.service_storage.id
 
-  block_public_acls = true
-  block_public_policy = true
-  ignore_public_acls = true
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
   restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket" "service_upload" {
+  bucket        = local.service_upload_bucket_name
+  acl           = "private"
+  force_destroy = true
+
+  lifecycle_rule {
+    id      = "cleanup-rule"
+    enabled = true
+
+    expiration {
+      days = 1
+    }
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "service_upload" {
+  bucket = aws_s3_bucket.service_upload.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_notification" "service_upload_trigger" {
+  bucket = aws_s3_bucket.service_upload.id
+
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.service_s3_trigger.arn
+    events              = ["s3:ObjectCreated:*"]
+    filter_suffix       = ".zip"
+  }
 }
 
 ##################################
@@ -76,21 +122,18 @@ resource "aws_s3_bucket_public_access_block" "repository" {
 resource "aws_dynamodb_table" "service_table" {
   name         = "${var.project_prefix}-service"
   billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "resource_type"
-  range_key    = "resource_id"
+  hash_key     = "PartitionKey"
+  range_key    = "SortKey"
 
   attribute {
-    name = "resource_type"
+    name = "PartitionKey"
     type = "S"
   }
 
   attribute {
-    name = "resource_id"
+    name = "SortKey"
     type = "S"
   }
-
-  stream_enabled   = true
-  stream_view_type = "NEW_IMAGE"
 }
 
 #################################
@@ -109,10 +152,42 @@ resource "aws_lambda_function" "service_api_handler" {
 
   environment {
     variables = {
-      TableName = aws_dynamodb_table.service_table.name
-      PublicUrl = local.service_url
+      TableName  = aws_dynamodb_table.service_table.name
+      BucketName = aws_s3_bucket.service_storage.id
+      PublicUrl  = local.service_url
     }
   }
+}
+
+#################################
+#  aws_lambda_function : service-s3-trigger
+#################################
+
+resource "aws_lambda_function" "service_s3_trigger" {
+  filename         = "../service/s3-trigger/build/dist/lambda.zip"
+  function_name    = format("%.64s", replace("${var.project_prefix}-service-s3-trigger", "/[^a-zA-Z0-9_]+/", "-" ))
+  role             = aws_iam_role.service.arn
+  handler          = "index.handler"
+  source_code_hash = filebase64sha256("../service/s3-trigger/build/dist/lambda.zip")
+  runtime          = "nodejs10.x"
+  timeout          = "900"
+  memory_size      = "3008"
+
+  environment {
+    variables = {
+      TableName  = aws_dynamodb_table.service_table.name
+      BucketName = aws_s3_bucket.service_storage.id
+      PublicUrl  = local.service_url
+    }
+  }
+}
+
+resource "aws_lambda_permission" "service_s3_trigger" {
+  statement_id  = "AllowExecutionFromS3Bucket"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.service_s3_trigger.arn
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.service_upload.arn
 }
 
 ##############################
