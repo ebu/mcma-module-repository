@@ -1,10 +1,34 @@
+import * as AWS from "aws-sdk";
+import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda";
 import { McmaApiRouteCollection } from "@mcma/api";
+import { AuthProvider } from "@mcma/client";
+import { awsV4Auth } from "@mcma/aws-client";
+import { AwsCloudWatchLoggerProvider } from "@mcma/aws-logger";
 import { ApiGatewayApiController } from "@mcma/aws-api-gateway";
 
-const restController = new ApiGatewayApiController(new McmaApiRouteCollection());
+import { PublishModuleRoute } from "./publish-module-route";
+import { SearchModulesRoute } from "./search-modules-route";
 
-export async function handler(event, context) {
-    console.log(JSON.stringify(event, null, 2), JSON.stringify(context, null, 2));
+const loggerProvider = new AwsCloudWatchLoggerProvider("module-repository-api-handler", process.env.LogGroupName);
+const authProvider = new AuthProvider().add(awsV4Auth(AWS));
 
-    return await restController.handleRequest(event, context);
+const routes = [
+   new PublishModuleRoute(),
+   new SearchModulesRoute(authProvider)
+];
+
+const restController = new ApiGatewayApiController(new McmaApiRouteCollection(routes), loggerProvider);
+
+export async function handler(event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> {
+    const logger = loggerProvider.get(context.awsRequestId);
+    try {
+        logger.functionStart(context.awsRequestId);
+        logger.debug(event);
+        logger.debug(context);
+
+        return await restController.handleRequest(event, context);
+    } finally {
+        logger.functionEnd(context.awsRequestId);
+        await loggerProvider.flush(Date.now() + context.getRemainingTimeInMillis() - 5000);
+    }
 }

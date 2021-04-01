@@ -1,7 +1,7 @@
 {
-    "name": "module-repository-api-handler",
+    "name": "module-repository-s3-trigger",
     "version": "0.0.0",
-    "description": "API gateway request handler for Module Repository",
+    "description": "S3 trigger that processes ",
     "private": true,
     "engines": {
         "node": "^10.16.3"
@@ -9,20 +9,14 @@
     "main": "src/index.js",
     "license": "Apache-2.0",
     "dependencies": {
-        "@mcma/api": "0.14.1-alpha5",
-        "@mcma/aws-api-gateway": "0.14.1-alpha5",
-        "@mcma/aws-client": "0.14.1-alpha5",
-        "@mcma/aws-dynamodb": "0.14.1-alpha5",
         "@mcma/aws-logger": "0.14.1-alpha5",
-        "@mcma/client": "0.14.1-alpha5",
         "@mcma/core": "0.14.1-alpha5",
-        "@mcma/data": "0.14.1-alpha5",
         "@mcma/worker-invoker": "0.14.1-alpha5",
         "aws-sdk": "^2.563.0"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.70",
         "@types/node": "^12.12.19",
-        "aws-lambda": "^1.0.6"
+        "@types/uuid": "7.0.3"
     }
 }

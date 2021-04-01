@@ -1,0 +1,37 @@
+{
+  "properties": {
+    "name": {
+      "type": "text"
+    },
+    "namespace": {
+      "type": "text"
+    },
+    "provider": {
+      "type": "text"
+    },
+    "language": {
+      "type": "text"
+    },
+    "version": {
+      "type": "text"
+    },
+    "displayName": {
+      "type": "text"
+    },
+    "description": {
+      "type": "text"
+    },
+    "published": {
+      "type": "date"
+    },
+    "publishedBy": {
+      "type": "text"
+    },
+    "owner": {
+      "type": "text"
+    },
+    "keywords": {
+      "type": "keyword"
+    }
+  }
+}

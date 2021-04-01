@@ -1,5 +1,7 @@
 include "deployment",
-        "deployment:post-deploy",
         "service",
         "service:api-handler",
-        "service:s3-trigger"
+        "service:common",
+        "service:module-bucket-trigger",
+        "service:staging-bucket-trigger",
+        "service:worker"
