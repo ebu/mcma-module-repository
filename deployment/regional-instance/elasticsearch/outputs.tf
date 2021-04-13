@@ -6,6 +6,10 @@ output "endpoint" {
   value = "https://${aws_elasticsearch_domain.module_repository.endpoint}"
 }
 
-output "index_name" {
-  value = local.index_name
+output "latest_versions_index_name" {
+  value = local.latest_versions_index_name
+}
+
+output "previous_versions_index_name" {
+  value = local.previous_versions_index_name
 }

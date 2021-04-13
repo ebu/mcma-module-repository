@@ -1,6 +1,10 @@
 variable profile {}
 variable region {}
+variable environment_type {}
+variable parent_domain {}
+variable subdomain {}
 variable account_id {}
 variable default_tags {}
 variable log_group {}
 variable replication_region {}
+variable zone_id {}

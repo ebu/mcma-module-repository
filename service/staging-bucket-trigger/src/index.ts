@@ -34,8 +34,7 @@ export async function handler(event: S3Event, context: Context) {
                 }).promise();
             } catch (error) {
                 logger.error("Failed processing record");
-                logger.error(record);
-                logger.error(error?.toString());
+                logger.error({ error, record });
             }
         }
     } finally {

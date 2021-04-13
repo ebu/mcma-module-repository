@@ -5,9 +5,18 @@ import { ProviderCollection, Worker, WorkerRequest, WorkerRequestProperties } fr
 import { DynamoDbTableProvider } from "@mcma/aws-dynamodb";
 import { AwsCloudWatchLoggerProvider } from "@mcma/aws-logger";
 import { awsV4Auth } from "@mcma/aws-client";
+import { ModuleSearchClient } from "@local/common";
 
 import { createPublishModuleHandler } from "./publish-module-operation";
 import { createIndexModuleHandler } from "./index-module-operation";
+
+const {
+    ElasticEndpoint,
+    LatestVersionsElasticIndex,
+    PreviousVersionsElasticIndex,
+    ElasticAuthType,
+    ElasticAuthContext
+} = process.env;
 
 const authProvider = new AuthProvider().add(awsV4Auth(AWS));
 const dbTableProvider = new DynamoDbTableProvider();
@@ -21,13 +30,18 @@ const providerCollection = new ProviderCollection({
     resourceManagerProvider
 });
 
-const publishModule = createPublishModuleHandler();
-const indexModule = createIndexModuleHandler(authProvider);
+const searchClient = new ModuleSearchClient({
+    endpoint: ElasticEndpoint,
+    latestVersionsIndex: LatestVersionsElasticIndex,
+    previousVersionsIndex: PreviousVersionsElasticIndex,
+    authenticator: authProvider.get(ElasticAuthType, ElasticAuthContext),
+    logger: loggerProvider.get()
+});
 
 const worker =
     new Worker(providerCollection)
-        .addOperation("publishModule", publishModule)
-        .addOperation("indexModule", indexModule);
+        .addOperation("publishModule", createPublishModuleHandler())
+        .addOperation("indexModule", createIndexModuleHandler(searchClient));
 
 export async function handler(event: WorkerRequestProperties, context: Context) {
     const logger = loggerProvider.get(context.awsRequestId, event.tracker);

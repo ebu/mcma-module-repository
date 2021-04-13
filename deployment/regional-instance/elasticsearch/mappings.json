@@ -1,19 +1,50 @@
 {
   "properties": {
-    "name": {
-      "type": "text"
-    },
     "namespace": {
-      "type": "text"
+      "type": "text",
+      "fields": {
+        "raw": {
+          "type": "keyword"
+        }
+      }
+    },
+    "name": {
+      "type": "text",
+      "fields": {
+        "raw": {
+          "type": "keyword"
+        }
+      }
     },
     "provider": {
-      "type": "text"
-    },
-    "language": {
-      "type": "text"
+      "type": "text",
+      "fields": {
+        "raw": {
+          "type": "keyword"
+        }
+      }
     },
     "version": {
-      "type": "text"
+      "type": "keyword"
+    },
+    "parsedVersion": {
+      "properties": {
+        "major": {
+          "type": "integer"
+        },
+        "minor": {
+          "type": "integer"
+        },
+        "patch": {
+          "type": "integer"
+        },
+        "preReleaseStage": {
+          "type": "keyword"
+        },
+        "preReleaseNumber": {
+          "type": "integer"
+        }
+      }
     },
     "displayName": {
       "type": "text"
@@ -21,17 +52,17 @@
     "description": {
       "type": "text"
     },
-    "published": {
+    "dateCreated": {
       "type": "date"
-    },
-    "publishedBy": {
-      "type": "text"
     },
     "owner": {
       "type": "text"
     },
-    "keywords": {
+    "tags": {
       "type": "keyword"
+    },
+    "isPreRelease": {
+      "type": "boolean"
     }
   }
 }

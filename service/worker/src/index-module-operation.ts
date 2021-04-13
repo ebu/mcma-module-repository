@@ -1,21 +1,15 @@
 import { OperationHandler } from "@mcma/worker";
-import { McmaModuleSearchClient, Module } from "@local/common";
+import { Module, ModuleSearchClient } from "@local/common";
 import { downloadAndReadZip, readTextFile } from "./helpers";
-import { AuthProvider } from "@mcma/client";
+import { ModuleProperties } from "../../common/build/staging";
 
-const { ModuleBucket, ElasticEndpoint, ElasticIndex, ElasticAuthType, ElasticAuthContext } = process.env;
+const { ModuleBucket, RepositoryBaseUrl } = process.env;
 
 type IndexModuleRequest = {
     key: string;
 };
 
-export function createIndexModuleHandler(authProvider: AuthProvider): OperationHandler {
-    const searchClient = new McmaModuleSearchClient({
-        endpoint: ElasticEndpoint,
-        index: ElasticIndex,
-        authenticator: authProvider.get(ElasticAuthType, ElasticAuthContext)
-    });
-
+export function createIndexModuleHandler(searchClient: ModuleSearchClient): OperationHandler {
     return async (_, request) => {
         const indexModuleRequest = <IndexModuleRequest>request.input;
 
@@ -33,7 +27,13 @@ export function createIndexModuleHandler(authProvider: AuthProvider): OperationH
             return;
         }
 
-        const module = JSON.parse(moduleJson) as Module;
-        await searchClient.index([module.namespace, module.name, module.provider, module.version].join("/"), module);
+        const moduleProperties = JSON.parse(moduleJson) as ModuleProperties;
+        const { namespace, name, provider, version } = moduleProperties;
+
+        const module = new Module(moduleProperties);
+        module.id = RepositoryBaseUrl.replace(/\/+$/, "") + "/" + [namespace, name, provider, version].join("/");
+        module.dateCreated = new Date();
+
+        await searchClient.index(module);
     };
 }

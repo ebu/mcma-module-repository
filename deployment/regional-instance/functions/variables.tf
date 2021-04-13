@@ -1,4 +1,7 @@
 variable region {}
+variable environment_type {}
+variable parent_domain {}
+variable subdomain {}
 variable account_id {}
 variable log_group {}
 variable default_tags {}
@@ -6,4 +9,6 @@ variable module_bucket {}
 variable module_staging_bucket {}
 variable elastic_domain_arn {}
 variable elastic_endpoint {}
-variable elastic_index {}
+variable elastic_latest_versions_index {}
+variable elastic_previous_versions_index {}
+variable zone_id {}

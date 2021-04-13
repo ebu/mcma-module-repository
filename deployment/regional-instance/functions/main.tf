@@ -1,3 +1,10 @@
+locals {
+  regional_domain_name = "${var.subdomain}-api-${var.region}-${var.environment_type}.${var.parent_domain}"
+  regional_base_url    = "https://${local.regional_domain_name}/"
+  global_domain_name   = "${var.subdomain}-api.${var.parent_domain}"
+  global_url           = "https://${local.global_domain_name}/"
+}
+
 data "aws_iam_policy_document" "lambda_assume_role_policy_doc" {
   statement {
     effect  = "Allow"
@@ -29,7 +36,7 @@ data "aws_iam_policy_document" "lambda_cloudwatch_access" {
 }
 
 resource "aws_iam_policy" "lambda_cloudwatch_access" {
-  name   = "module-repository-${var.region}-lambda-cloudwatch-access"
+  name   = "module-repository-lambda-cloudwatch-access-${var.region}-${var.environment_type}"
   policy = data.aws_iam_policy_document.lambda_cloudwatch_access.json
 }
 
@@ -46,6 +53,6 @@ data "aws_iam_policy_document" "worker_lambda_access_policy" {
 }
 
 resource "aws_iam_policy" "worker_lambda_access" {
-  name   = "module-repository-${var.region}-worker-lambda-access"
+  name   = "module-repository-worker-lambda-access-${var.region}-${var.environment_type}"
   policy = data.aws_iam_policy_document.worker_lambda_access_policy.json
 }

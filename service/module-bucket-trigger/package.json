@@ -9,9 +9,9 @@
     "main": "src/index.js",
     "license": "Apache-2.0",
     "dependencies": {
-        "@mcma/aws-logger": "0.14.1-alpha5",
-        "@mcma/core": "0.14.1-alpha5",
-        "@mcma/worker-invoker": "0.14.1-alpha5",
+        "@mcma/aws-logger": "0.14.1-alpha11",
+        "@mcma/core": "0.14.1-alpha11",
+        "@mcma/worker-invoker": "0.14.1-alpha11",
         "aws-sdk": "^2.563.0"
     },
     "devDependencies": {

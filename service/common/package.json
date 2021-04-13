@@ -7,17 +7,17 @@
     "types": "index.d.ts",
     "license": "Apache-2.0",
     "peerDependencies": {
-        "@mcma/aws-client": "0.14.1-alpha5",
-        "@mcma/client": "0.14.1-alpha5",
-        "@mcma/core": "0.14.1-alpha5",
-        "@mcma/data": "0.14.1-alpha5"
+        "@mcma/aws-client": "0.14.1-alpha11",
+        "@mcma/client": "0.14.1-alpha11",
+        "@mcma/core": "0.14.1-alpha11",
+        "@mcma/data": "0.14.1-alpha11"
     },
     "devDependencies": {
         "@types/aws-sdk": "^2.7.0",
         "@types/node": "^10.17.35",
-        "@mcma/aws-client": "0.14.1-alpha5",
-        "@mcma/client": "0.14.1-alpha5",
-        "@mcma/core": "0.14.1-alpha5",
-        "@mcma/data": "0.14.1-alpha5"
+        "@mcma/aws-client": "0.14.1-alpha11",
+        "@mcma/client": "0.14.1-alpha11",
+        "@mcma/core": "0.14.1-alpha11",
+        "@mcma/data": "0.14.1-alpha11"
     }
 }

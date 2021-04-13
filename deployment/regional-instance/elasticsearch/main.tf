@@ -10,7 +10,7 @@ terraform {
 }
 
 resource "aws_elasticsearch_domain" "module_repository" {
-  domain_name           = "module-repository-${var.region}"
+  domain_name           = "module-repository-${var.environment_type}"
   elasticsearch_version = "7.9"
 
   ebs_options {
@@ -27,7 +27,8 @@ resource "aws_elasticsearch_domain" "module_repository" {
 
 locals {
   domain_url = "https://${aws_elasticsearch_domain.module_repository.endpoint}"
-  index_name = "modules-${var.region}"
+  latest_versions_index_name = "latest-versions"
+  previous_versions_index_name = "previous-versions"
 }
 
 provider "elasticsearch" {
@@ -35,9 +36,18 @@ provider "elasticsearch" {
   aws_profile = var.profile
 }
 
-resource "elasticsearch_index" "modules" {
-  name               = local.index_name
+resource "elasticsearch_index" "latest_versions" {
+  name               = local.latest_versions_index_name
   number_of_shards   = 1
   number_of_replicas = 1
   mappings           = file("./regional-instance/elasticsearch/mappings.json")
+  force_destroy      = true
+}
+
+resource "elasticsearch_index" "previous_versions" {
+  name               = local.previous_versions_index_name
+  number_of_shards   = 1
+  number_of_replicas = 1
+  mappings           = file("./regional-instance/elasticsearch/mappings.json")
+  force_destroy      = true
 }

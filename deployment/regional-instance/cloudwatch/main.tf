@@ -14,7 +14,7 @@ data "aws_iam_policy_document" "cloudwatch_assume_role" {
 }
 
 resource "aws_iam_role" "cloudwatch_access" {
-  name               = "api-gateway-cloudwatch-${var.region}"
+  name               = "api-gateway-cloudwatch-${var.region}-${var.environment_type}"
   assume_role_policy = data.aws_iam_policy_document.cloudwatch_assume_role.json
 }
 
@@ -37,7 +37,7 @@ data "aws_iam_policy_document" "cloudwatch_access" {
 }
 
 resource "aws_iam_role_policy" "cloudwatch_access" {
-  name     = "api-gateway-cloudwatch-${var.region}"
+  name     = "api-gateway-cloudwatch-${var.region}-${var.environment_type}"
   role     = aws_iam_role.cloudwatch_access.id
   policy   = data.aws_iam_policy_document.cloudwatch_access.json
 }

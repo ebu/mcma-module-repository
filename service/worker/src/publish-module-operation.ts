@@ -45,8 +45,8 @@ export function createPublishModuleHandler(): OperationHandler {
                 return;
             }
 
-            const module = JSON.parse(moduleJson) as Module;
-            const moduleFromMetadata = JSON.parse(Utils.fromBase64(moduleJsonBase64));
+            const module = new Module(JSON.parse(moduleJson));
+            const moduleFromMetadata = new Module(JSON.parse(Utils.fromBase64(moduleJsonBase64)));
             if (JSON.stringify(module, null, 2) !== JSON.stringify(moduleFromMetadata, null, 2)) {
                 request.logger?.error(`'module-data' in metadata on object in bucket ${ModuleStagingBucket} with key ${publishModuleRequest.key} does not match the module.json provided in the zip package.`);
                 return;

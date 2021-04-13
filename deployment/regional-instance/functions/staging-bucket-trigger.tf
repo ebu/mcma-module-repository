@@ -1,5 +1,5 @@
 resource "aws_iam_role" "staging_bucket_trigger_role" {
-  name               = "module-repository-staging-bucket-trigger-${var.region}-role"
+  name               = "module-repository-staging-bucket-trigger-${var.region}-${var.environment_type}"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy_doc.json
 }
 
@@ -25,7 +25,7 @@ data "aws_iam_policy_document" "staging_bucket_trigger_s3_access_policy" {
 }
 
 resource "aws_iam_policy" "staging_bucket_trigger_s3_policy" {
-  name   = "module-repository-staging-bucket-trigger-${var.region}-s3-access"
+  name   = "module-repository-staging-bucket-trigger-s3-access-${var.region}-${var.environment_type}"
   policy = data.aws_iam_policy_document.staging_bucket_trigger_s3_access_policy.json
 }
 
@@ -46,7 +46,7 @@ resource "aws_iam_role_policy_attachment" "staging_bucket_trigger_lambda_policy_
 
 resource "aws_lambda_function" "staging_bucket_trigger" {
   filename         = "../service/staging-bucket-trigger/build/dist/lambda.zip"
-  function_name    = "module-repository-staging-bucket-trigger-${var.region}"
+  function_name    = "module-repository-staging-bucket-trigger-${var.region}-${var.environment_type}"
   role             = aws_iam_role.staging_bucket_trigger_role.arn
   handler          = "index.handler"
   source_code_hash = filebase64sha256("../service/staging-bucket-trigger/build/dist/lambda.zip")
