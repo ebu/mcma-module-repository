@@ -88,7 +88,7 @@ resource "aws_lambda_function" "worker" {
 
   environment {
     variables = {
-      RepositoryBaseUrl            = local.regional_base_url
+      ModulesBaseUrl               = local.modules_base_url
       LogGroupName                 = var.log_group
       ModuleStagingBucket          = var.module_staging_bucket.id
       ModuleBucket                 = var.module_bucket.id

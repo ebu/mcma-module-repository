@@ -1,9 +1,8 @@
 import { OperationHandler } from "@mcma/worker";
-import { Module, ModuleSearchClient } from "@local/common";
+import { Module, ModuleSearchClient, ModuleProperties } from "@local/common";
 import { downloadAndReadZip, readTextFile } from "./helpers";
-import { ModuleProperties } from "../../common/build/staging";
 
-const { ModuleBucket, RepositoryBaseUrl } = process.env;
+const { ModuleBucket, ModulesBaseUrl } = process.env;
 
 type IndexModuleRequest = {
     key: string;
@@ -28,10 +27,8 @@ export function createIndexModuleHandler(searchClient: ModuleSearchClient): Oper
         }
 
         const moduleProperties = JSON.parse(moduleJson) as ModuleProperties;
-        const { namespace, name, provider, version } = moduleProperties;
-
         const module = new Module(moduleProperties);
-        module.id = RepositoryBaseUrl.replace(/\/+$/, "") + "/" + [namespace, name, provider, version].join("/");
+        module.id = ModulesBaseUrl.replace(/\/+$/, "") + "/" + module.key;
         module.dateCreated = new Date();
 
         await searchClient.index(module);

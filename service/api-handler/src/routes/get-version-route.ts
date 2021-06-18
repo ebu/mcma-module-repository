@@ -17,7 +17,7 @@ function createGetHandler(searchClient: ModuleSearchClient, s3: S3): McmaApiRout
 
         const downloadUrl = await s3.getSignedUrlPromise("getObject", {
             Bucket: ModuleBucket,
-            Key: module.id + ".zip"
+            Key: module.key + ".zip"
         });
 
         requestContext.setResponseBody(Object.assign({}, module, { downloadUrl }));

@@ -12,7 +12,7 @@ function createPublishHandler(s3: S3): McmaApiRouteHandler {
 
     async function getPublishUrl(module: Module): Promise<string> {
         const moduleData = Utils.toBase64(JSON.stringify(module));
-        const key = module.id + ".zip";
+        const key = module.key + ".zip";
 
         const putObjectRequest: PutObjectRequest = {
             Bucket: ModuleStagingBucket,

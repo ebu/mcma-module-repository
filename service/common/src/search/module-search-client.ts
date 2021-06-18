@@ -212,7 +212,7 @@ export class ModuleSearchClient {
 
     async getModuleVersion(namespace: string, name: string, provider: string, version: string): Promise<Module> {
         const url = `_doc/${[namespace, name, normalizeProvider(provider), version].join(ID_DELIMITER)}`;
-        const validateStatus = (status: number) => (status > 200 && status < 300) || status !== 404;
+        const validateStatus = (status: number) => (status >= 200 && status < 300) || status === 404;
 
         const [previousVersionsResp, latestVersionsResp] =
             await Promise.all([

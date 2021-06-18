@@ -29,14 +29,14 @@ task terraformApply(type: Exec) {
     dependsOn ":build"
     dependsOn terraformInit
     commandLine terraformExecutable
-    args "apply", "-auto-approve"
+    args "apply", "--auto-approve"
 }
 
 task terraformDestroy(type: Exec) {
     dependsOn ":verifyTerraform"
     dependsOn terraformInit
     commandLine terraformExecutable
-    args "destroy", "-force"
+    args "destroy", "--auto-approve"
 }
 
 task terraformOutput(type: Exec) {
@@ -45,7 +45,7 @@ task terraformOutput(type: Exec) {
     inputs.file("terraform.tfstate")
     outputs.file("terraform.output.json")
     commandLine terraformExecutable
-    args "output", "-json"
+    args "output", "--json"
     doFirst {
         standardOutput new FileOutputStream("${projectDir}/terraform.output.json")
     }

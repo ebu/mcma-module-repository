@@ -3,6 +3,7 @@ import { normalizeProvider, SupportedProvider } from "./supported-provider";
 import { McmaException, McmaResource, McmaResourceProperties } from "@mcma/core";
 
 export interface ModuleProperties extends McmaResourceProperties {
+    readonly key: string;
     namespace: string;
     name: string;
     provider: SupportedProvider;
@@ -48,5 +49,9 @@ export class Module extends McmaResource implements ModuleProperties {
         this.description = this.description || this.displayName;
         this.inputParameters = this.inputParameters || [];
         this.outputParameters = this.outputParameters || [];
+    }
+
+    get key(): string {
+        return [this.namespace, this.name, this.provider, this.version].join("/");
     }
 }

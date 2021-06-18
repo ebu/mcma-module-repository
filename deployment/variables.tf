@@ -1,5 +1,5 @@
 variable profile {
-  default = "terraform"
+  default = "ebu"
 }
 
 variable environment_type {
@@ -11,7 +11,7 @@ variable parent_domain {
 }
 
 variable subdomain {
-  default = "module-repository"
+  default = "modules"
 }
 
 variable zone_name {

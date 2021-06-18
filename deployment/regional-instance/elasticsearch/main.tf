@@ -19,7 +19,7 @@ resource "aws_elasticsearch_domain" "module_repository" {
   }
 
   cluster_config {
-    instance_type = "t3.medium.elasticsearch"
+    instance_type = "t3.small.elasticsearch"
   }
 
   tags = var.default_tags

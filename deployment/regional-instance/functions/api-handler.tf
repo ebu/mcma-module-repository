@@ -90,7 +90,7 @@ resource "aws_lambda_function" "api_handler" {
 
   environment {
     variables = {
-      RepositoryBaseUrl            = local.regional_base_url
+      ModulesBaseUrl               = local.modules_base_url
       LogGroupName                 = var.log_group
       ModuleBucket                 = var.module_bucket.id
       ModuleStagingBucket          = var.module_staging_bucket.id
@@ -165,9 +165,10 @@ resource "aws_apigatewayv2_domain_name" "regional_domain_name" {
 }
 
 resource "aws_apigatewayv2_api_mapping" "regional_domain_name_mapping" {
-  api_id      = aws_apigatewayv2_api.module_repository_api.id
-  domain_name = aws_apigatewayv2_domain_name.regional_domain_name.id
-  stage       = aws_apigatewayv2_stage.module_repository_api_stage.id
+  api_id          = aws_apigatewayv2_api.module_repository_api.id
+  domain_name     = aws_apigatewayv2_domain_name.regional_domain_name.id
+  stage           = aws_apigatewayv2_stage.module_repository_api_stage.id
+  api_mapping_key = "api"
 }
 
 resource "aws_apigatewayv2_domain_name" "global_domain_name" {
@@ -181,9 +182,10 @@ resource "aws_apigatewayv2_domain_name" "global_domain_name" {
 }
 
 resource "aws_apigatewayv2_api_mapping" "global_domain_name_mapping" {
-  api_id      = aws_apigatewayv2_api.module_repository_api.id
-  domain_name = aws_apigatewayv2_domain_name.global_domain_name.id
-  stage       = aws_apigatewayv2_stage.module_repository_api_stage.id
+  api_id          = aws_apigatewayv2_api.module_repository_api.id
+  domain_name     = aws_apigatewayv2_domain_name.global_domain_name.id
+  stage           = aws_apigatewayv2_stage.module_repository_api_stage.id
+  api_mapping_key = "api"
 }
 
 resource "aws_route53_record" "dns_record" {

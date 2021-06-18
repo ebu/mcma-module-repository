@@ -1,8 +1,9 @@
 locals {
-  regional_domain_name = "${var.subdomain}-api-${var.region}-${var.environment_type}.${var.parent_domain}"
+  regional_domain_name = "${var.subdomain}-${var.region}-${var.environment_type}.${var.parent_domain}"
   regional_base_url    = "https://${local.regional_domain_name}/"
-  global_domain_name   = "${var.subdomain}-api.${var.parent_domain}"
+  global_domain_name   = "${var.subdomain}.${var.parent_domain}"
   global_url           = "https://${local.global_domain_name}/"
+  modules_base_url     = "https://${local.global_domain_name}/api/modules"
 }
 
 data "aws_iam_policy_document" "lambda_assume_role_policy_doc" {

@@ -1,6 +1,6 @@
 import { McmaException } from "@mcma/core";
 
-export const supportedProviders = ["AWS" , "Azure", "Google"] as const;
+export const supportedProviders = ["AWS" , "Azure", "Google", "Kubernetes"] as const;
 export type SupportedProvider = typeof supportedProviders[number];
 
 function matchSupportedProvider(provider: string): SupportedProvider {

@@ -6,7 +6,7 @@ import { Module } from "@local/common";
 const { ModuleBucket } = process.env;
 
 export async function versionExistsAsync(s3: S3, module: Module): Promise<boolean> {
-    const key = module.id + ".zip";
+    const key = module.key + ".zip";
     try {
         await s3.headObject({ Bucket: ModuleBucket, Key: key }).promise();
         return true;
