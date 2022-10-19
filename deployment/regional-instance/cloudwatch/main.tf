@@ -1,3 +1,14 @@
+terraform {
+  required_version = ">= 1.3.2"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 4.34"
+    }
+  }
+}
+
 data "aws_iam_policy_document" "cloudwatch_assume_role" {
   statement {
     effect  = "Allow"

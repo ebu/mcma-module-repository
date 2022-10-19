@@ -30,6 +30,7 @@ export function createPublishModuleHandler(): OperationHandler {
                 return true;
             });
 
+            request.logger.info("Checking zip contents for module.json and at least one .tf file...");
             if (!moduleJson.length) {
                 request.logger?.error(`module.json file not found in zip from bucket ${ModuleStagingBucket} with key ${publishModuleRequest.key}`);
                 return;
@@ -38,6 +39,7 @@ export function createPublishModuleHandler(): OperationHandler {
                 request.logger?.error(`No Terraform files (.tf) found in zip from bucket ${ModuleStagingBucket} with key ${publishModuleRequest.key}`);
                 return;
             }
+            request.logger.info("module.json and .tf files found. Comparing module.json contents against object metadata...");
 
             const moduleJsonBase64 = metadata && metadata["module-data"];
             if (!moduleJsonBase64) {
@@ -51,6 +53,7 @@ export function createPublishModuleHandler(): OperationHandler {
                 request.logger?.error(`'module-data' in metadata on object in bucket ${ModuleStagingBucket} with key ${publishModuleRequest.key} does not match the module.json provided in the zip package.`);
                 return;
             }
+            request.logger.info(`Contents of module.json and module from object metadata match. Verifying content against object key '${publishModuleRequest.key}'...`);
 
             const [namespaceFromKey, moduleNameFromKey, providerFromKey, versionZipFromKey] = publishModuleRequest.key.split("/");
             const versionFromKey = versionZipFromKey.replace(/.zip$/g, "");
@@ -59,12 +62,16 @@ export function createPublishModuleHandler(): OperationHandler {
                 request.logger?.error(`One or more properties in module.json do not match values in object key ${publishModuleRequest.key}: ${moduleJson}`);
                 return;
             }
+            request.logger.info(`Contents of module.json matches object key. Copying to key ${publishModuleRequest.key} in modules bucket ${ModuleBucket}...`);
 
             await s3.copyObject({
                 CopySource: `/${ModuleStagingBucket}/${publishModuleRequest.key}`,
                 Bucket: ModuleBucket,
-                Key: publishModuleRequest.key
+                Key: publishModuleRequest.key,
+                ACL: "public-read",
+                ContentDisposition: "attachment; filename=\"" + publishModuleRequest.key.replace(/\//g, "_") + "\""
             }).promise();
+            request.logger.info("Successfully copied to modules bucket.");
         } finally {
             try {
                 await s3.deleteObject({ Bucket: ModuleStagingBucket, Key: publishModuleRequest.key }).promise();

@@ -7,7 +7,8 @@ data "aws_iam_policy_document" "api_handler_s3_access_policy" {
   statement {
     effect    = "Allow"
     actions   = [
-      "s3:ListBucket"
+      "s3:ListBucket",
+      "s3:GetBucketLocation"
     ]
     resources = [
       "arn:aws:s3:::${var.module_staging_bucket.id}",
@@ -27,6 +28,7 @@ data "aws_iam_policy_document" "api_handler_s3_access_policy" {
   statement {
     effect    = "Allow"
     actions   = [
+      "s3:GetObject",
       "s3:PutObject"
     ]
     resources = [
@@ -84,7 +86,7 @@ resource "aws_lambda_function" "api_handler" {
   role             = aws_iam_role.api_handler_role.arn
   handler          = "index.handler"
   source_code_hash = filebase64sha256("../service/api-handler/build/dist/lambda.zip")
-  runtime          = "nodejs12.x"
+  runtime          = "nodejs14.x"
   timeout          = "30"
   memory_size      = "3008"
 
@@ -98,8 +100,6 @@ resource "aws_lambda_function" "api_handler" {
       ElasticEndpoint              = var.elastic_endpoint
       LatestVersionsElasticIndex   = var.elastic_latest_versions_index
       PreviousVersionsElasticIndex = var.elastic_previous_versions_index
-      ElasticAuthType              = "AWS4"
-      ElasticAuthContext           = "{ \"serviceName\": \"es\" }"
     }
   }
 
@@ -126,6 +126,13 @@ resource "aws_apigatewayv2_integration" "module_repository_api_integration" {
   payload_format_version = "2.0"
 }
 
+resource "aws_apigatewayv2_route" "module_repository_api_get_route" {
+  api_id             = aws_apigatewayv2_api.module_repository_api.id
+  route_key          = "GET /{proxy+}"
+  authorization_type = "NONE"
+  target             = "integrations/${aws_apigatewayv2_integration.module_repository_api_integration.id}"
+}
+
 resource "aws_apigatewayv2_route" "module_repository_api_route" {
   api_id             = aws_apigatewayv2_api.module_repository_api.id
   route_key          = "$default"
@@ -138,7 +145,7 @@ resource "aws_lambda_permission" "module_repository_api_lambda_permission" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.api_handler.arn
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_apigatewayv2_api.module_repository_api.execution_arn}/*/$default"
+  source_arn    = "${aws_apigatewayv2_api.module_repository_api.execution_arn}/*"
 }
 
 resource "aws_apigatewayv2_stage" "module_repository_api_stage" {
@@ -150,15 +157,11 @@ resource "aws_apigatewayv2_stage" "module_repository_api_stage" {
   tags = var.default_tags
 }
 
-data "aws_acm_certificate" "ssl_cert" {
-  domain = var.parent_domain
-}
-
 resource "aws_apigatewayv2_domain_name" "regional_domain_name" {
   domain_name = local.regional_domain_name
 
   domain_name_configuration {
-    certificate_arn = data.aws_acm_certificate.ssl_cert.arn
+    certificate_arn = var.cert_arn
     endpoint_type   = "REGIONAL"
     security_policy = "TLS_1_2"
   }
@@ -175,7 +178,7 @@ resource "aws_apigatewayv2_domain_name" "global_domain_name" {
   domain_name = local.global_domain_name
 
   domain_name_configuration {
-    certificate_arn = data.aws_acm_certificate.ssl_cert.arn
+    certificate_arn = var.cert_arn
     endpoint_type   = "REGIONAL"
     security_policy = "TLS_1_2"
   }

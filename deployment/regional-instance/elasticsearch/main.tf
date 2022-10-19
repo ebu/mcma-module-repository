@@ -1,10 +1,10 @@
 terraform {
-  required_version = ">= 0.13"
+  required_version = ">= 1.3.2"
 
   required_providers {
     elasticsearch = {
       source  = "phillbaker/elasticsearch"
-      version = "1.5.1"
+      version = ">= 2.0.5"
     }
   }
 }
@@ -26,8 +26,8 @@ resource "aws_elasticsearch_domain" "module_repository" {
 }
 
 locals {
-  domain_url = "https://${aws_elasticsearch_domain.module_repository.endpoint}"
-  latest_versions_index_name = "latest-versions"
+  domain_url                   = "https://${aws_elasticsearch_domain.module_repository.endpoint}"
+  latest_versions_index_name   = "latest-versions"
   previous_versions_index_name = "previous-versions"
 }
 

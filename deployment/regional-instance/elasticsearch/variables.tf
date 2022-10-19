@@ -1,4 +1,12 @@
-variable profile {}
-variable region {}
-variable environment_type {}
-variable default_tags {}
+variable profile {
+  type = string
+}
+variable region {
+  type = string
+}
+variable environment_type {
+  type = string
+}
+variable default_tags {
+  type = map(string)
+}

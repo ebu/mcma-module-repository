@@ -7,7 +7,8 @@ data "aws_iam_policy_document" "worker_s3_access_policy" {
   statement {
     effect    = "Allow"
     actions   = [
-      "s3:ListBucket"
+      "s3:ListBucket",
+      "s3:GetBucketLocation"
     ]
     resources = [
       "arn:aws:s3:::${var.module_staging_bucket.id}",
@@ -28,7 +29,8 @@ data "aws_iam_policy_document" "worker_s3_access_policy" {
     effect    = "Allow"
     actions   = [
       "s3:GetObject",
-      "s3:PutObject"
+      "s3:PutObject",
+      "s3:PutObjectAcl"
     ]
     resources = [
       "arn:aws:s3:::${var.module_bucket.id}/*"
@@ -82,7 +84,7 @@ resource "aws_lambda_function" "worker" {
   role             = aws_iam_role.worker_role.arn
   handler          = "index.handler"
   source_code_hash = filebase64sha256("../service/worker/build/dist/lambda.zip")
-  runtime          = "nodejs12.x"
+  runtime          = "nodejs14.x"
   timeout          = "30"
   memory_size      = "3008"
 
@@ -95,8 +97,6 @@ resource "aws_lambda_function" "worker" {
       ElasticEndpoint              = var.elastic_endpoint
       LatestVersionsElasticIndex   = var.elastic_latest_versions_index
       PreviousVersionsElasticIndex = var.elastic_previous_versions_index
-      ElasticAuthType              = "AWS4"
-      ElasticAuthContext           = "{ \"serviceName\": \"es\" }"
     }
   }
 

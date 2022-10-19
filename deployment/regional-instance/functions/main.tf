@@ -1,3 +1,14 @@
+terraform {
+  required_version = ">= 1.3.2"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 4.34"
+    }
+  }
+}
+
 locals {
   regional_domain_name = "${var.subdomain}-${var.region}-${var.environment_type}.${var.parent_domain}"
   regional_base_url    = "https://${local.regional_domain_name}/"

@@ -1,4 +1,12 @@
-variable region {}
-variable environment_type {}
-variable default_tags {}
-variable replication_region {}
+variable region {
+  type = string
+}
+variable environment_type {
+  type = string
+}
+variable default_tags {
+  type = map(string)
+}
+variable replication_region {
+  type = string
+}

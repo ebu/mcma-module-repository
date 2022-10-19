@@ -1,3 +1,14 @@
+terraform {
+  required_version = ">= 1.3.2"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 4.34"
+    }
+  }
+}
+
 locals {
   module_bucket_name         = "module-repository-modules-${var.region}-${var.environment_type}"
   module_staging_bucket_name = "module-repository-modules-staging-${var.region}-${var.environment_type}"
@@ -8,9 +19,12 @@ resource "aws_s3_bucket" "modules_staging_bucket" {
   bucket        = local.module_staging_bucket_name
   tags          = var.default_tags
   force_destroy = true
+}
 
-  versioning {
-    enabled = true
+resource "aws_s3_bucket_versioning" "modules_staging_bucket" {
+  bucket = aws_s3_bucket.modules_staging_bucket.id
+  versioning_configuration {
+    status = "Enabled"
   }
 }
 
@@ -26,6 +40,24 @@ data "aws_iam_policy_document" "s3_assume_role_policy_doc" {
         "s3.amazonaws.com"
       ]
     }
+  }
+}
+
+resource "aws_s3_bucket" "modules_bucket" {
+  bucket        = local.module_bucket_name
+  tags          = var.default_tags
+  force_destroy = true
+}
+
+resource "aws_s3_bucket_acl" "modules_bucket_acl" {
+  bucket = aws_s3_bucket.modules_bucket.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_versioning" "modules_bucket_versioning" {
+  bucket = aws_s3_bucket.modules_bucket.id
+  versioning_configuration {
+    status = "Enabled"
   }
 }
 
@@ -62,23 +94,21 @@ resource "aws_iam_role_policy_attachment" "replication_policy_attachment" {
   policy_arn = aws_iam_policy.replication_policy.arn
 }
 
-resource "aws_s3_bucket" "modules_bucket" {
-  bucket        = local.module_bucket_name
-  acl           = "public-read"
-  tags          = var.default_tags
-  force_destroy = true
+resource "aws_s3_bucket_replication_configuration" "modules_bucket_replication" {
+  depends_on = [aws_s3_bucket_versioning.modules_bucket_versioning]
+  bucket = aws_s3_bucket.modules_bucket.id
+  role = aws_iam_role.replication_role.arn
 
-  versioning {
-    enabled = true
-  }
-
-  replication_configuration {
-    role = aws_iam_role.replication_role.arn
-    rules {
-      status = "Enabled"
-      destination {
-        bucket = "arn:aws:s3:::${local.replication_bucket_name}"
-      }
+  rule {
+    status = "Enabled"
+    destination {
+      bucket = "arn:aws:s3:::${local.replication_bucket_name}"
     }
   }
+}
+
+resource "aws_s3_bucket_public_access_block" "modules_bucket_public_access" {
+  bucket             = aws_s3_bucket.modules_bucket.id
+  block_public_acls  = false
+  ignore_public_acls = false
 }

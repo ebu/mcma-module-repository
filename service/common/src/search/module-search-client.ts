@@ -133,6 +133,9 @@ export class ModuleSearchClient {
         }
 
         must.push(getPreReleaseBoolQuery(searchCriteria.includePreRelease));
+        if (should.length > 0) {
+            must.push({ bool: { should } });
+        }
 
         let from = parseInt(searchCriteria.pageStartToken);
         if (isNaN(from)) {
@@ -142,7 +145,7 @@ export class ModuleSearchClient {
         const requestBody: Elastic.Request = {
             size: searchCriteria.pageSize ?? 25,
             from,
-            query: { bool: { must, should } },
+            query: { bool: { must } },
             sort: descendingVersionSort
         };
 
@@ -153,7 +156,7 @@ export class ModuleSearchClient {
 
         const nextPageStart = from + requestBody.size;
 
-        // if we are including pre-release results and we have both an active pre-release and release version,
+        // if we are including pre-release results, and we have both an active pre-release and release version,
         // we want to take the pre-release
         let results = resp.data.hits.hits?.map(x => searchDataToModule(x._source)) ?? [];
         if (searchCriteria.includePreRelease) {

@@ -9,6 +9,7 @@ export const ID_DELIMITER = "_";
 export function moduleToSearchData(module: Module): ModuleSearchData {
     const parsedVersion = Version.parse(module.version);
     return Object.assign({}, module, {
+        fullyQualifiedName: module.namespace + "/" + module.name,
         provider: normalizeProvider(module.provider),
         isPreRelease: !!parsedVersion.preReleaseStage,
         hasPreRelease: false,
@@ -17,6 +18,7 @@ export function moduleToSearchData(module: Module): ModuleSearchData {
 }
 
 export function searchDataToModule(searchData: ModuleSearchData): Module {
+    delete searchData.fullyQualifiedName;
     delete searchData.isPreRelease;
     delete searchData.hasPreRelease;
     delete searchData.parsedVersion;

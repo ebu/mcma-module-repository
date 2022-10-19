@@ -47,13 +47,13 @@ export class Version {
         let preReleaseNumberText: string;
         if (preReleaseLabel.toLowerCase().startsWith("alpha")) {
             preReleaseStage = "alpha";
-            preReleaseNumberText = preReleaseLabel.substr("alpha".length);
+            preReleaseNumberText = preReleaseLabel.substring("alpha".length);
         } else if (preReleaseLabel.toLowerCase().startsWith("beta")) {
             preReleaseStage = "beta";
-            preReleaseNumberText = preReleaseLabel.substr("beta".length);
+            preReleaseNumberText = preReleaseLabel.substring("beta".length);
         } else if (preReleaseLabel.toLowerCase().startsWith("rc")) {
             preReleaseStage = "rc";
-            preReleaseNumberText = preReleaseLabel.substr("rc".length);
+            preReleaseNumberText = preReleaseLabel.substring("rc".length);
         }
 
         if (!preReleaseStage)

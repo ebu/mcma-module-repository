@@ -1,2 +1,6 @@
-variable region {}
-variable environment_type {}
+variable region {
+  type = string
+}
+variable environment_type {
+  type = string
+}

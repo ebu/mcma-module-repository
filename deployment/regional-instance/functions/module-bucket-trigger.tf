@@ -50,7 +50,7 @@ resource "aws_lambda_function" "module_bucket_trigger" {
   role             = aws_iam_role.module_bucket_trigger_role.arn
   handler          = "index.handler"
   source_code_hash = filebase64sha256("../service/module-bucket-trigger/build/dist/lambda.zip")
-  runtime          = "nodejs12.x"
+  runtime          = "nodejs14.x"
   timeout          = "30"
   memory_size      = "3008"
 

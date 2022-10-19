@@ -4,7 +4,7 @@ import { AuthProvider, ResourceManagerProvider } from "@mcma/client";
 import { ProviderCollection, Worker, WorkerRequest, WorkerRequestProperties } from "@mcma/worker";
 import { DynamoDbTableProvider } from "@mcma/aws-dynamodb";
 import { AwsCloudWatchLoggerProvider } from "@mcma/aws-logger";
-import { awsV4Auth } from "@mcma/aws-client";
+import { awsV4Auth, AwsV4Authenticator } from "@mcma/aws-client";
 import { ModuleSearchClient } from "@local/common";
 
 import { createPublishModuleHandler } from "./publish-module-operation";
@@ -13,10 +13,9 @@ import { createIndexModuleHandler } from "./index-module-operation";
 const {
     ElasticEndpoint,
     LatestVersionsElasticIndex,
-    PreviousVersionsElasticIndex,
-    ElasticAuthType,
-    ElasticAuthContext
+    PreviousVersionsElasticIndex
 } = process.env;
+
 
 const authProvider = new AuthProvider().add(awsV4Auth(AWS));
 const dbTableProvider = new DynamoDbTableProvider();
@@ -30,11 +29,19 @@ const providerCollection = new ProviderCollection({
     resourceManagerProvider
 });
 
+const elasticAuthContext = {
+    accessKey: AWS.config.credentials.accessKeyId,
+    secretKey: AWS.config.credentials.secretAccessKey,
+    sessionToken: AWS.config.credentials.sessionToken,
+    region: AWS.config.region,
+    serviceName: "es"
+};
+
 const searchClient = new ModuleSearchClient({
     endpoint: ElasticEndpoint,
     latestVersionsIndex: LatestVersionsElasticIndex,
     previousVersionsIndex: PreviousVersionsElasticIndex,
-    authenticator: authProvider.get(ElasticAuthType, ElasticAuthContext),
+    authenticator: new AwsV4Authenticator(elasticAuthContext),
     logger: loggerProvider.get()
 });
 

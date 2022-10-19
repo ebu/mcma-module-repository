@@ -1,7 +1,6 @@
 import * as AWS from "aws-sdk";
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda";
-import { AuthProvider } from "@mcma/client";
-import { awsV4Auth } from "@mcma/aws-client";
+import { AwsV4Authenticator } from "@mcma/aws-client";
 import { AwsCloudWatchLoggerProvider } from "@mcma/aws-logger";
 import { ApiGatewayApiController } from "@mcma/aws-api-gateway";
 import { ModuleSearchClient } from "@local/common";
@@ -12,18 +11,24 @@ const s3 = new AWS.S3();
 const {
     ElasticEndpoint,
     LatestVersionsElasticIndex,
-    PreviousVersionsElasticIndex,
-    ElasticAuthType,
-    ElasticAuthContext
+    PreviousVersionsElasticIndex
 } = process.env;
 
 const loggerProvider = new AwsCloudWatchLoggerProvider("module-repository-api-handler", process.env.LogGroupName);
-const authProvider = new AuthProvider().add(awsV4Auth(AWS));
+
+const elasticAuthContext = {
+    accessKey: AWS.config.credentials.accessKeyId,
+    secretKey: AWS.config.credentials.secretAccessKey,
+    sessionToken: AWS.config.credentials.sessionToken,
+    region: AWS.config.region,
+    serviceName: "es"
+};
+
 const searchClient = new ModuleSearchClient({
     endpoint: ElasticEndpoint,
     latestVersionsIndex: LatestVersionsElasticIndex,
     previousVersionsIndex: PreviousVersionsElasticIndex,
-    authenticator: authProvider.get(ElasticAuthType, ElasticAuthContext),
+    authenticator: new AwsV4Authenticator(elasticAuthContext),
     logger: loggerProvider.get()
 });
 

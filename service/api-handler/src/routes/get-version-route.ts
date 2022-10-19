@@ -1,5 +1,6 @@
 import { S3 } from "aws-sdk";
 import { McmaApiRequestContext, McmaApiRoute, McmaApiRouteHandler } from "@mcma/api";
+import { buildS3Url } from "@mcma/aws-s3";
 import { ModuleSearchClient } from "@local/common";
 import { versionExistsAsync } from "../version-exists";
 
@@ -15,12 +16,17 @@ function createGetHandler(searchClient: ModuleSearchClient, s3: S3): McmaApiRout
             return;
         }
 
-        const downloadUrl = await s3.getSignedUrlPromise("getObject", {
-            Bucket: ModuleBucket,
-            Key: module.key + ".zip"
-        });
+        const downloadUrl = await buildS3Url(ModuleBucket, module.key + ".zip", s3.config.region);
 
         requestContext.setResponseBody(Object.assign({}, module, { downloadUrl }));
+
+        const terraformGetParam =
+            requestContext.request.queryStringParameters &&
+            requestContext.request.queryStringParameters["terraform-get"];
+        if (terraformGetParam === "1") {
+            requestContext.response.headers = requestContext.response.headers ?? {};
+            requestContext.response.headers["X-Terraform-Get"] = downloadUrl;
+        }
     }
 }
 
