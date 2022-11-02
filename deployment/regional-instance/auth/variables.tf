@@ -1,6 +1,3 @@
-variable profile {
-  type = string
-}
 variable region {
   type = string
 }
@@ -26,6 +23,9 @@ variable zone_id {
   type = string
 }
 variable cert_arn {
+  type = string
+}
+variable cognito_cert_arn {
   type = string
 }
 variable default_tags {

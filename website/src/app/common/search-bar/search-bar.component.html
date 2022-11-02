@@ -1,0 +1,17 @@
+<form [formGroup]="form" class="flex flex-col w-full items-start" (submit)="handleSubmit($event)">
+  <div class="flex flex-row w-full h-12 bg-customGray-lighter border border-solid border-gray-700 focus-visible:ring-1 focus-visible:ring-turquoise">
+    <span class="flex-1 text-gray-200 placeholder-gray-500 text-lg relative">
+      <fa-icon class="absolute top-3 left-4 text-gray-400" [icon]="faSearch"></fa-icon>
+      <input type="text" class="border-0 m-1S pl-12 pr-2 py-1 w-full h-full bg-transparent focus:outline-none" placeholder="Search modules..."
+             formControlName="query"/>
+    </span>
+    <button type="submit" class="px-6 text-sm text-white font-bold uppercase bg-turquoise-dark border border-solid border-turquoise-dark">Search</button>
+  </div>
+  <input type="checkbox" class="hidden" id="include-pre-release-checkbox" formControlName="includePreRelease" (change)="handleSubmit($event)"/>
+  <label for="include-pre-release-checkbox" class="flex items-center justify-center bg-customGray px-2 cursor-pointer mt-2 ml-2">
+    <span class="w-4 h-4 bg-customGray-lighter mr-2 flex items-center justify-center">
+      <span class="text-gray-300 font-bold">&#10003;</span>
+    </span>
+    <span class="text-gray-300 text-sm">Include pre-release</span>
+  </label>
+</form>

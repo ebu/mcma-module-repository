@@ -1,0 +1,29 @@
+<div class="flex flex-row m-3 border border-solid border-customGray-lighter rounded bg-customGray-dark w-full">
+  <div class="flex justify-center items-center ml-4 mr-2">
+    <img *ngIf="module?.icon; else defaultIcon" class="w-16" src="{{ module?.icon }}"
+         alt="{{ module?.displayName + ' Icon' }}">
+    <ng-template #defaultIcon>
+      <img class="w-16 opacity-30" src="../../../assets/module-default.png" alt="Default Module Icon">
+    </ng-template>
+  </div>
+  <div class="flex flex-col flex-1">
+    <div class="flex flex-row items-center justify-between h-10">
+      <a href="/" class="mx-3 text-lg text-turquoise font-bold tracking-wide">{{ module?.displayName }}</a>
+      <span
+        class="text-white text-sm bg-customGray-lighter px-8 m-0 rounded-bl-xl self-start">{{ module?.namespace }}</span>
+    </div>
+    <div class="flex justify-between ml-2 my-1 items-center">
+      <div class="flex text-white items-center">
+        <div *ngFor="let provider of module?.providers" class="flex">
+          <span class="ml-2 px-2 bg-customGray-lighter text-sm rounded-tl rounded-bl">{{ provider.name }}</span>
+          <span
+            class="mr-2 px-2 bg-customPurple-darkest text-sm rounded-tr rounded-br">v{{ provider.latestVersion }}</span>
+        </div>
+      </div>
+    </div>
+    <span class="text-gray-300 flex-1 my-4 mx-4 flex items-center text-sm">{{ module?.description }}</span>
+    <span class="text-white flex-1 mb-4 mx-2 flex items-center text-sm">
+      <span *ngFor="let tag of module?.tags" class="ml-2 pt-0 px-3 bg-customGray-lighter text-sm rounded-tl rounded">{{ tag }}</span>
+    </span>
+  </div>
+</div>

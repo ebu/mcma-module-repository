@@ -1,0 +1,14 @@
+{
+  "name": "module-repository-token-receiver",
+  "version": "0.0.0",
+  "description": "MCMA Worker for Module Repository",
+  "private": true,
+  "engines": {
+    "node": "^14.17.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.70",
+    "@types/node": "^12.12.19",
+    "aws-lambda": "^1.0.6"
+  }
+}

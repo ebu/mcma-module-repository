@@ -1,0 +1,31 @@
+<div class="flex flex-col items-center w-full">
+  <div class="mt-8 w-1/2 flex flex-col items-center">
+    <mcma-search-bar class="flex w-full" [query]="initialQuery" [includePreRelease]="initialIncludePreRelease"
+                     (resultsRequested)="updateSearch($event)"></mcma-search-bar>
+  </div>
+  <div class="flex flex-col flex-1 justify-center items-center w-5/12">
+    <ng-container *ngIf="isSearching$ | async; else resultsOrError">
+      <span class="block w-16 h-16 border-4 border-customGray-lighter border-t-turquoise-light border-solid rounded-full animate-spin"></span>
+    </ng-container>
+    <ng-template #resultsOrError>
+      <ng-container *ngIf="error$ | async as error; else results">
+        <h2 class="text-2xl text-red-800 italic">Oops! Something went wrong. Please try again.</h2>
+        <!--<pre class="w-1/2 mt-8">{{ error.toString() }}</pre>-->
+      </ng-container>
+      <ng-template #results>
+        <ng-container *ngIf="hasResults$ | async; else noResults">
+          <div class="">
+          </div>
+          <div class="flex flex-col justify-start items-center w-full flex-1 mt-8">
+            <ng-container *ngFor="let result of results$ | async">
+              <mcma-search-result [module]="result"></mcma-search-result>
+            </ng-container>
+          </div>
+        </ng-container>
+      </ng-template>
+      <ng-template #noResults>
+        <h3 class="text-gray-500 italic text-3xl">No results found</h3>
+      </ng-template>
+    </ng-template>
+  </div>
+</div>

@@ -34,28 +34,6 @@ module "cloudwatch" {
   environment_type = var.environment_type
 }
 
-module "functions" {
-  source = "./functions"
-
-  region           = var.region
-  environment_type = var.environment_type
-  parent_domain    = var.parent_domain
-  subdomain        = var.subdomain
-  account_id       = var.account_id
-  log_group        = var.log_group
-  zone_id          = var.zone_id
-  cert_arn         = var.cert_arn
-
-  module_bucket                   = module.buckets.module_bucket
-  module_staging_bucket           = module.buckets.module_staging_bucket
-  elastic_domain_arn              = module.elasticsearch.domain_arn
-  elastic_endpoint                = module.elasticsearch.endpoint
-  elastic_latest_versions_index   = module.elasticsearch.latest_versions_index_name
-  elastic_previous_versions_index = module.elasticsearch.previous_versions_index_name
-
-  default_tags = var.default_tags
-}
-
 module "github_oidc" {
   source = "./github-oidc"
 
@@ -77,11 +55,11 @@ module "auth" {
   source = "./auth"
 
   region           = var.region
-  profile          = var.profile
   environment_type = var.environment_type
   parent_domain    = var.parent_domain
   zone_id          = var.zone_id
-  cert_arn         = var.auth_cert_arn
+  cert_arn         = var.cert_arn
+  cognito_cert_arn = var.auth_cert_arn
 
   auth_subdomain        = var.auth_subdomain
   github_oidc_subdomain = var.github_oidc_subdomain
@@ -89,4 +67,48 @@ module "auth" {
   github_client_secret  = var.github_client_secret
 
   default_tags = var.default_tags
+}
+
+module "functions" {
+  source = "./functions"
+
+  region           = var.region
+  environment_type = var.environment_type
+  parent_domain    = var.parent_domain
+  subdomain        = var.subdomain
+  account_id       = var.account_id
+  log_group        = var.log_group
+  zone_id          = var.zone_id
+  cert_arn         = var.cert_arn
+
+  cognito_user_pool_arn           = module.auth.user_pool_arn
+  module_bucket                   = module.buckets.module_bucket
+  module_staging_bucket           = module.buckets.module_staging_bucket
+  elastic_domain_arn              = module.elasticsearch.domain_arn
+  elastic_endpoint                = module.elasticsearch.endpoint
+  elastic_latest_versions_index   = module.elasticsearch.latest_versions_index_name
+  elastic_previous_versions_index = module.elasticsearch.previous_versions_index_name
+
+  default_tags = var.default_tags
+}
+
+module "website" {
+  source = "./website"
+
+  region           = var.region
+  environment_type = var.environment_type
+  parent_domain    = var.parent_domain
+  subdomain        = var.subdomain
+  default_tags     = var.default_tags
+}
+
+module "dns" {
+  source = "./dns"
+
+  region           = var.region
+  environment_type = var.environment_type
+  parent_domain    = var.parent_domain
+  subdomain        = var.subdomain
+  zone_id          = var.zone_id
+  cert_arn         = var.cert_arn
 }

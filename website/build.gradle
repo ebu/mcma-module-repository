@@ -1,0 +1,19 @@
+apply from: "${project.rootDir}/gradle-tasks-for-npm.gradle"
+
+task npmRunBuild(type: Exec) {
+    dependsOn ":verifyNodeJS"
+    dependsOn npmInstall
+    inputs.file "package.json"
+    inputs.file "angular.json"
+    inputs.file "postcss.config.cjs"
+    inputs.file "tailwind.config.cjs"
+    inputs.dir "src"
+    outputs.dir "dist"
+    commandLine npmExecutable
+    args "run"
+    args "build"
+}
+
+task build {
+  dependsOn npmRunBuild
+}

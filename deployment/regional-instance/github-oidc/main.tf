@@ -14,10 +14,11 @@ locals {
   env_vars     = {
     GITHUB_CLIENT_ID     = var.github_client_id
     GITHUB_CLIENT_SECRET = var.github_client_secret
-    COGNITO_REDIRECT_URI = "https://${var.auth_subdomain}.${var.parent_domain}/oauth2/idpresponse"
+    COGNITO_REDIRECT_URI = "https://${var.auth_subdomain}-${var.region}-${var.environment_type}.${var.parent_domain}/oauth2/idpresponse"
 
-    GITHUB_API_URL   = "https://github.com"
-    GITHUB_LOGIN_URL = "https://api.github.com"
+    GITHUB_API_URL   = "https://api.github.com"
+    GITHUB_LOGIN_URL = "https://github.com"
+    LOG_LEVEL        = "debug"
   }
   regional_domain_name = "${var.github_oidc_subdomain}-${var.region}-${var.environment_type}.${var.parent_domain}"
   regional_base_url    = "https://${local.regional_domain_name}/"

@@ -2,7 +2,7 @@ import groovy.json.JsonOutput
 
 task terraformInit(type: Exec) {
     dependsOn ":verifyTerraform"
-    inputs.file "main.tf"
+    inputs.files "**/main.tf"
     outputs.upToDateWhen { file(".terraform").exists() }
     commandLine terraformExecutable
     args "init"

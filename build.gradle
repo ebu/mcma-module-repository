@@ -1,5 +1,5 @@
 def requiredVersionTerraform = "^1.0.0"
-def requiredVersionNodeJS = "^14.0.0"
+def requiredVersionNodeJS = "^16.0.0"
 def requiredVersionTsc = "^4.0.0"
 
 allprojects {
@@ -144,6 +144,7 @@ task verifyTsc {
 
 task build {
     dependsOn "service:build"
+    dependsOn "website:build"
 }
 
 task clean {}

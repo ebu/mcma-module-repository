@@ -1,7 +1,7 @@
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
-def McmaVersion = "0.14.7"
+def McmaVersion = "0.14.8"
 
 task setMcmaVersion {
     def packageJson = file("package.json")
@@ -87,6 +87,16 @@ task npmUpdate(type: Exec) {
     outputs.upToDateWhen { true }
     commandLine npmExecutable
     args "update"
+}
+
+task npmUpdateWithDev(type: Exec) {
+    dependsOn ":verifyNodeJS"
+    inputs.file "package.json"
+    inputs.property("todaysDate", new Date().clearTime())
+    outputs.upToDateWhen { true }
+    commandLine npmExecutable
+    args "update"
+    args "--dev"
 }
 
 task npmDedup(type: Exec) {

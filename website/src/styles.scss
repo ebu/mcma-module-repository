@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  z-index: 1;
+}
+
+router-outlet + * {
+  @apply flex w-full
+}
+
+input::placeholder, textarea::placeholder {
+  font-style: italic;
+}
+
+input::selection, textarea::selection {
+  background-color: theme("colors.customPurple.DEFAULT")
+}
+
+input:focus::selection, textarea:focus::selection {
+  background-color: theme("colors.customPurple.darkest")
+}
