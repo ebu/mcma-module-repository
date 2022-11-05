@@ -6,11 +6,12 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ConfigInitializer, ConfigService } from "./config.service";
 
-import { HeaderComponent, FooterComponent } from './layout';
-import { SearchComponent, LandingComponent } from './routes';
-import { SearchBarComponent, SearchResultComponent } from './common';
 import { ApiClient } from "./api";
+import { SearchBarComponent, SearchResultComponent, SessionStorageService, UserService } from './common';
+import { FooterComponent, HeaderComponent } from './layout';
+import { AuthCallbackComponent, LandingComponent, LoginComponent, SearchComponent } from './routes';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,9 @@ import { ApiClient } from "./api";
     SearchComponent,
     LandingComponent,
     SearchBarComponent,
-    SearchResultComponent
+    SearchResultComponent,
+    AuthCallbackComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -30,7 +33,11 @@ import { ApiClient } from "./api";
     ReactiveFormsModule
   ],
   providers: [
-    ApiClient
+    ApiClient,
+    ConfigService,
+    SessionStorageService,
+    UserService,
+    ConfigInitializer
   ],
   bootstrap: [ AppComponent ]
 })

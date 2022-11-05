@@ -1,4 +1,6 @@
-include "deployment",
+include "auth",
+        "auth:push-cli-tokens",
+        "deployment",
         "service",
         "service:api-handler",
         "service:common",

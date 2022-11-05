@@ -63,6 +63,7 @@ module "auth" {
 
   auth_subdomain        = var.auth_subdomain
   github_oidc_subdomain = var.github_oidc_subdomain
+  website_subdomain     = var.subdomain
   github_client_id      = var.github_client_id
   github_client_secret  = var.github_client_secret
 
@@ -97,9 +98,15 @@ module "website" {
 
   region           = var.region
   environment_type = var.environment_type
+  log_group        = var.log_group
   parent_domain    = var.parent_domain
   subdomain        = var.subdomain
-  default_tags     = var.default_tags
+
+  auth_ws_api_arn = module.auth.auth_ws_api_arn
+  auth_ws_domain  = module.auth.auth_ws_domain
+  client_id       = module.auth.user_pool_client_id
+
+  default_tags = var.default_tags
 }
 
 module "dns" {

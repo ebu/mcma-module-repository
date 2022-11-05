@@ -143,6 +143,7 @@ task verifyTsc {
 }
 
 task build {
+    dependsOn "auth:build"
     dependsOn "service:build"
     dependsOn "website:build"
 }

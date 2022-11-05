@@ -1,0 +1,16 @@
+<div class="flex w-full items-center justify-center">
+  <div class="flex flex-col w-96 h-72 p-4 items-center justify-center">
+    <button *ngIf="!(callbackId$ | async); else redirect"
+            class="flex flex-row items-center justify-center w-72 h-16 bg-turquoise-dark text-white font-bold"
+            (click)="loginWithGitHub()">
+      <fa-icon class="text-3xl mx-2" [icon]="faGithub"></fa-icon>
+      <span class="text-xl mx-2">Login with GitHub</span>
+    </button>
+    <ng-template #redirect>
+      <div class="flex flex-row items-center justify-center w-96 h-16 text-gray-400">
+        <fa-icon class="text-3xl mx-2" [icon]="faGithub"></fa-icon>
+        <span class="text-xl mx-2 italic">Redirecting you to GitHub...</span>
+      </div>
+    </ng-template>
+  </div>
+</div>

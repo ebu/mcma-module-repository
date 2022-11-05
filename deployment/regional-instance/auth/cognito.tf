@@ -1,6 +1,7 @@
 locals {
   regional_domain_name = "${var.auth_subdomain}-${var.region}-${var.environment_type}.${var.parent_domain}"
   github_oidc_root     = "https://${var.github_oidc_subdomain}.${var.parent_domain}"
+  auth_callback        = "https://${var.website_subdomain}.${var.parent_domain}/auth-callback"
 }
 
 resource "aws_cognito_user_pool" "users" {
@@ -11,11 +12,13 @@ resource "aws_cognito_user_pool" "users" {
 resource "aws_cognito_user_pool_client" "client" {
   name                                 = "mcma-module-repository"
   user_pool_id                         = aws_cognito_user_pool.users.id
-  callback_urls                        = ["https://modules.mcma.io"]
+  callback_urls                        = [local.auth_callback]
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_flows                  = ["code", "implicit"]
-  allowed_oauth_scopes                 = ["email", "openid"]
+  allowed_oauth_scopes                 = ["email", "openid", "profile"]
+  explicit_auth_flows                  = ["ALLOW_REFRESH_TOKEN_AUTH"]
   supported_identity_providers         = [aws_cognito_identity_provider.github_oidc_provider.provider_name]
+  read_attributes                      = ["email", "name", "picture", "preferred_username", "profile", "website"]
 }
 
 resource "aws_cognito_user_pool_domain" "auth_domain" {
@@ -34,7 +37,7 @@ resource "aws_route53_record" "auth_domain_dns" {
     evaluate_target_health = false
     name                   = aws_cognito_user_pool_domain.auth_domain.cloudfront_distribution_arn
     # This zone_id is fixed
-    zone_id = "Z2FDTNDATAQYW2"
+    zone_id                = "Z2FDTNDATAQYW2"
   }
 
   latency_routing_policy {
@@ -54,11 +57,6 @@ resource "aws_cognito_identity_provider" "github_oidc_provider" {
     client_id                     = var.github_client_id
     client_secret                 = var.github_client_secret
     oidc_issuer                   = local.github_oidc_root
-
-    #    authorization_endpoint = "${local.github_oidc_root}/authorize"
-    #    token_endpoint         = "${local.github_oidc_root}/token"
-    #    userinfo_endpoint      = "${local.github_oidc_root}/userinfo"
-    #    jwks_uri               = "${local.github_oidc_root}/.well-known/jwks.json"
   }
 
   attribute_mapping = {

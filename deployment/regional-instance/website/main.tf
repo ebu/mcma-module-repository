@@ -2,6 +2,12 @@ locals {
   website_bucket_name = "mcma-module-repository-website-${var.region}-${var.environment_type}"
   website_dist_dir    = "../website/dist/website"
   website_dist_files  = fileset(local.website_dist_dir, "**")
+  website_config      = jsonencode({
+    region       = var.region
+    environment  = var.environment_type
+    clientId     = var.client_id
+    authCallback = "https://${local.global_domain_name}/auth-callback"
+  })
 }
 
 resource "aws_s3_bucket" "website" {
@@ -54,4 +60,12 @@ resource "aws_s3_object" "website_file" {
   endswith(each.value, "js") ? "text/javascript" :
   endswith(each.value, "css") ? "text/css" : "text/plain"
   )
+}
+
+resource "aws_s3_object" "website_config_file" {
+  bucket       = aws_s3_bucket.website.id
+  key          = "config.json"
+  etag         = md5(local.website_config)
+  content      = local.website_config
+  content_type = "application/json"
 }

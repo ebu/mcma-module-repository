@@ -12,3 +12,4 @@ export interface Module {
   website: string;
   repository: string;
 }
+

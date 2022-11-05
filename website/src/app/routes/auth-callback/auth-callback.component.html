@@ -1,0 +1,28 @@
+<div class="flex w-full items-center justify-center">
+  <div *ngIf="noTokens$ | async" class="flex flex-col justify-center w-96 text-gray-400 text-3xl">
+    <h2 class="flex items-center text-red-400 text-3xl">Something's not right...</h2>
+    <div class="text-gray-400 text-lg mt-4">You've landed on a page used as part of our auth flow, but some important data is missing.</div>
+    <div class="text-gray-400 text-lg mt-4 mt-4">Returning you to the home page momentarily...</div>
+  </div>
+  <div *ngIf="isSending$ | async" class="text-gray-400 text-3xl">
+    Authenticating your CLI...
+  </div>
+  <div *ngIf="isCompleted$ | async" class="flex flex-col items-center justify-center">
+    <span class="flex items-center text-green-400">
+      <fa-icon class="text-4xl mx-4" [icon]="faCircleCheck"></fa-icon>
+      <h2 class="text-3xl">Authentication completed</h2>
+    </span>
+    <div class="text-gray-400 text-lg mt-4">You can now close this page.</div>
+  </div>
+  <div *ngIf="isFailed$ | async" class="flex flex-col items-center justify-center">
+    <span class="flex items-center text-red-400">
+      <fa-icon class="text-4xl mx-4" [icon]="faCircleExclamation"></fa-icon>
+      <h2 class="text-3xl">Authentication failed</h2>
+    </span>
+    <div class="text-gray-400 text-lg mt-4">
+      <span>Please try again. If the problem persists, please </span>
+      <a class="text-turquoise underline" href="https://github.com/ebu/mcma-module-repository/issues">let us know</a>
+      <span>.</span>
+    </div>
+  </div>
+</div>

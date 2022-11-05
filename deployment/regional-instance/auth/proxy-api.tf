@@ -33,6 +33,18 @@ resource "aws_apigatewayv2_stage" "auth_proxy_stage" {
   tags = var.default_tags
 }
 
+resource "aws_apigatewayv2_api_mapping" "regional_proxy_domain_name_mapping" {
+  api_id      = aws_apigatewayv2_api.auth_proxy.id
+  domain_name = aws_apigatewayv2_domain_name.regional_proxy_domain_name.id
+  stage       = aws_apigatewayv2_stage.auth_proxy_stage.id
+}
+
+resource "aws_apigatewayv2_api_mapping" "global_domain_name_mapping" {
+  api_id      = aws_apigatewayv2_api.auth_proxy.id
+  domain_name = aws_apigatewayv2_domain_name.global_domain_name.id
+  stage       = aws_apigatewayv2_stage.auth_proxy_stage.id
+}
+
 resource "aws_apigatewayv2_domain_name" "regional_proxy_domain_name" {
   domain_name = local.regional_proxy_domain_name
 
@@ -41,12 +53,6 @@ resource "aws_apigatewayv2_domain_name" "regional_proxy_domain_name" {
     endpoint_type   = "REGIONAL"
     security_policy = "TLS_1_2"
   }
-}
-
-resource "aws_apigatewayv2_api_mapping" "regional_proxy_domain_name_mapping" {
-  api_id      = aws_apigatewayv2_api.auth_proxy.id
-  domain_name = aws_apigatewayv2_domain_name.regional_proxy_domain_name.id
-  stage       = aws_apigatewayv2_stage.auth_proxy_stage.id
 }
 
 resource "aws_apigatewayv2_domain_name" "global_domain_name" {
@@ -59,13 +65,7 @@ resource "aws_apigatewayv2_domain_name" "global_domain_name" {
   }
 }
 
-resource "aws_apigatewayv2_api_mapping" "global_domain_name_mapping" {
-  api_id          = aws_apigatewayv2_api.auth_proxy.id
-  domain_name     = aws_apigatewayv2_domain_name.global_domain_name.id
-  stage           = aws_apigatewayv2_stage.auth_proxy_stage.id
-}
-
-resource "aws_route53_record" "dns_record" {
+resource "aws_route53_record" "regional_proxy" {
   name    = aws_apigatewayv2_domain_name.regional_proxy_domain_name.domain_name
   type    = "A"
   zone_id = var.zone_id
@@ -77,7 +77,7 @@ resource "aws_route53_record" "dns_record" {
   }
 }
 
-resource "aws_route53_record" "github_oidc" {
+resource "aws_route53_record" "global" {
   name           = local.global_domain_name
   zone_id        = var.zone_id
   set_identifier = "${var.region}-${var.environment_type}"

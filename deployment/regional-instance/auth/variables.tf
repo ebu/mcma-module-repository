@@ -13,6 +13,9 @@ variable auth_subdomain {
 variable github_oidc_subdomain {
   type = string
 }
+variable website_subdomain {
+  type = string
+}
 variable github_client_id {
   type = string
 }
