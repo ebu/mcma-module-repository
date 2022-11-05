@@ -1,7 +1,8 @@
 locals {
-  regional_domain_name = "${var.auth_subdomain}-${var.region}-${var.environment_type}.${var.parent_domain}"
-  github_oidc_root     = "https://${var.github_oidc_subdomain}.${var.parent_domain}"
-  auth_callback        = "https://${var.website_subdomain}.${var.parent_domain}/auth-callback"
+  regional_domain_name    = "${var.auth_subdomain}-${var.region}-${var.environment_type}.${var.parent_domain}"
+  github_oidc_root        = "https://${var.github_oidc_subdomain}.${var.parent_domain}"
+  auth_callback           = "https://${var.website_subdomain}.${var.parent_domain}/auth-callback"
+  localhost_auth_callback = "http://localhost:4200/auth-callback"
 }
 
 resource "aws_cognito_user_pool" "users" {
@@ -12,7 +13,7 @@ resource "aws_cognito_user_pool" "users" {
 resource "aws_cognito_user_pool_client" "client" {
   name                                 = "mcma-module-repository"
   user_pool_id                         = aws_cognito_user_pool.users.id
-  callback_urls                        = [local.auth_callback]
+  callback_urls                        = [local.auth_callback, local.localhost_auth_callback]
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_flows                  = ["code", "implicit"]
   allowed_oauth_scopes                 = ["email", "openid", "profile"]

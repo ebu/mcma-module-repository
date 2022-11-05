@@ -2,7 +2,16 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-export const environment = {
+import { Config } from "../app/config";
+
+export const environment: { defaultConfig: Config, production: boolean } = {
+  defaultConfig: {
+    region: "us-east-1",
+    environment: "dev",
+    clientId: "52stnrvpeb0b3d0176ilv4e17u",
+    redirectUrl: "http://localhost:4200/auth-callback",
+    authResponseType: "code"
+  },
   production: false
 };
 
