@@ -6,8 +6,13 @@ export type Bool = {
     must_not?: Match[]
 };
 
+export type Terms = {
+    [key: string]: any[]
+};
+
 export type Query = {
-    bool: Bool
+    bool: Bool,
+    terms?: Terms
 };
 
 export type SortSpec = {

@@ -104,26 +104,27 @@ export class ModuleSearchClient {
     async searchModules(searchCriteria?: ModuleSearchCriteria): Promise<ModuleSearchResults> {
         searchCriteria = Object.assign({}, defaultModuleSearchCriteria, searchCriteria);
 
-        const should = [
-            ...searchCriteria.keywords.map<any>(k => ({ match: { displayName: k } })),
-            ...searchCriteria.keywords.map<any>(k => ({ match: { description: k } }))
+        const should: Elastic.Match[] = [
+            ...searchCriteria.keywords.map(k => ({ match: { displayName: k } })),
+            ...searchCriteria.keywords.map(k => ({ match: { description: k } }))
         ];
         const must: Elastic.Match[] = [];
+        const terms: Elastic.Terms = {};
 
         if (!searchCriteria.namespace) {
-            should.push(...searchCriteria.keywords.map<any>(k => ({ match: { namespace: k } })))
+            should.push(...searchCriteria.keywords.map(k => ({ match: { namespace: k } })))
         } else {
             must.push({ match: { "namespace.raw": searchCriteria.namespace }})
         }
 
         if (!searchCriteria.name) {
-            should.push(...searchCriteria.keywords.map<any>(k => ({ match: { name: k } })))
+            should.push(...searchCriteria.keywords.map(k => ({ match: { name: k } })))
         } else {
             must.push({ match: { "name.raw": searchCriteria.name }})
         }
 
         if (!searchCriteria.providers || !searchCriteria.providers.length) {
-            should.push(...searchCriteria.keywords.map<any>(k => ({ match: { provider: k } })))
+            should.push(...searchCriteria.keywords.map(k => ({ match: { provider: k } })))
         } else {
             must.push({
                 bool: {
@@ -137,15 +138,24 @@ export class ModuleSearchClient {
             must.push({ bool: { should } });
         }
 
+        if (searchCriteria.tags && searchCriteria.tags.length > 0) {
+            terms.tags = searchCriteria.tags;
+        }
+
         let from = parseInt(searchCriteria.pageStartToken);
         if (isNaN(from)) {
             from = 0;
         }
 
+        const query: Elastic.Query = { bool: { must } };
+        if (Object.keys(terms).length > 0) {
+            query.terms = terms;
+        }
+
         const requestBody: Elastic.Request = {
             size: searchCriteria.pageSize ?? 25,
             from,
-            query: { bool: { must } },
+            query,
             sort: descendingVersionSort
         };
 

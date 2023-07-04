@@ -11,11 +11,12 @@ export class ApiClient {
   }
 
   search(params: ModuleSearchParams): Observable<ModuleSearchResults> {
-    return this.httpClient.get<ModuleSearchResults>(`${ApiUrl}/modules`, {
-      params: {
-        q: params.q,
-        includePreRelease: params.includePreRelease?.toString() ?? false
-      }
-    });
+    const params = {
+      q: params.q,
+      namespace: params.namespace,
+      includePreRelease: params.includePreRelease?.toString() ?? false
+    };
+    
+    return this.httpClient.get<ModuleSearchResults>(`${ApiUrl}/modules`, { params });
   }
 }

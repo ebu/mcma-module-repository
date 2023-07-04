@@ -3,10 +3,9 @@ locals {
   website_dist_dir    = "../website/dist/website"
   website_dist_files  = fileset(local.website_dist_dir, "**")
   website_config      = jsonencode({
-    region       = var.region
-    environment  = var.environment_type
-    clientId     = var.client_id
-    authCallback = "https://${local.global_domain_name}/auth-callback"
+    region      = var.region
+    environment = var.environment_type
+    clientId    = var.client_id
   })
 }
 

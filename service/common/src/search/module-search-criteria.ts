@@ -3,6 +3,7 @@ export interface ModuleSearchCriteria {
     namespace?: string;
     name?: string;
     providers?: string[];
+    tags?: string[];
     pageSize?: number;
     pageStartToken?: string;
     includePreRelease?: boolean;
