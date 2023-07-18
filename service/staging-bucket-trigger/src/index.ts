@@ -1,10 +1,10 @@
-import * as AWS from "aws-sdk";
+import { InvokeCommand, LambdaClient } from "@aws-sdk/client-lambda";
 import { Context, S3Event } from "aws-lambda";
 import { v4 as uuidv4 } from "uuid";
 import { ConfigVariables, McmaTracker } from "@mcma/core";
 import { AwsCloudWatchLoggerProvider } from "@mcma/aws-logger";
 
-const lambda = new AWS.Lambda({ apiVersion: "2015-03-31" });
+const lambdaClient = new LambdaClient({});
 const loggerProvider = new AwsCloudWatchLoggerProvider("module-repository-publish-trigger", process.env.LogGroupName);
 const configVariables = new ConfigVariables();
 
@@ -17,7 +17,7 @@ export async function handler(event: S3Event, context: Context) {
 
         for (const record of event.Records) {
             try {
-                await lambda.invoke({
+                await lambdaClient.send(new InvokeCommand({
                     FunctionName: configVariables.get("WorkerFunctionId"),
                     InvocationType: "Event",
                     LogType: "None",
@@ -31,7 +31,7 @@ export async function handler(event: S3Event, context: Context) {
                             label: `Publish Module ${record.s3.object.key}`
                         })
                     })
-                }).promise();
+                }));
             } catch (error) {
                 logger.error("Failed processing record");
                 logger.error({ error, record });

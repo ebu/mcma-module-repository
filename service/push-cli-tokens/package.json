@@ -1,0 +1,19 @@
+{
+    "name": "module-repository-auth-push-cli-tokens",
+    "version": "0.0.0",
+    "description": "Pushes CLI tokens to a Websocket connection",
+    "private": true,
+    "engines": {
+        "node": "^18.0.0"
+    },
+    "main": "src/index.js",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "@aws-sdk/client-apigatewaymanagementapi": "^3.300.0",
+        "@mcma/aws-logger": "0.16.1"
+    },
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.70",
+        "@types/node": "^18.0.0"
+    }
+}

@@ -1,6 +1,7 @@
 task build {
     dependsOn "api-handler:build"
     dependsOn "module-bucket-trigger:build"
+    dependsOn "push-cli-tokens:build"
     dependsOn "staging-bucket-trigger:build"
     dependsOn "worker:build"
 }

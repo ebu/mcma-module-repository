@@ -43,7 +43,7 @@ export class SearchBarComponent implements AfterViewInit {
   constructor() {
     this.submitSubject.asObservable()
       .pipe(
-        map(() => new ModuleSearchParams(this.queryControl.value ?? "", this.includePreReleaseControl.value ?? false))
+        map(() => new ModuleSearchParams(this.queryControl.value ?? "", undefined, undefined, undefined, this.includePreReleaseControl.value ?? false))
       )
       .subscribe(this.resultsRequested);
   }

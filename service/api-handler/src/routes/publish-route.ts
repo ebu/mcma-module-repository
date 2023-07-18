@@ -1,6 +1,6 @@
 import { EOL } from "os";
-import { S3 } from "aws-sdk";
-import { PutObjectRequest } from "aws-sdk/clients/s3";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Utils } from "@mcma/core";
 import { HttpStatusCode, McmaApiRequestContext, McmaApiRoute, McmaApiRouteHandler } from "@mcma/api";
 import { Module, ModuleProperties} from "@local/common"
@@ -8,21 +8,21 @@ import { versionExistsAsync } from "../version-exists";
 
 const { ModuleStagingBucket } = process.env;
 
-function createPublishHandler(s3: S3): McmaApiRouteHandler {
+function createPublishHandler(s3Client: S3Client): McmaApiRouteHandler {
 
     async function getPublishUrl(module: Module): Promise<string> {
         const moduleData = Utils.toBase64(JSON.stringify(module));
         const key = module.key + ".zip";
 
-        const putObjectRequest: PutObjectRequest = {
+        const putObjectCommand = new PutObjectCommand({
             Bucket: ModuleStagingBucket,
             Key: key,
             Metadata: {
                 ["module-data"]: moduleData
             }
-        };
+        });
 
-        return await s3.getSignedUrlPromise("putObject", putObjectRequest);
+        return await getSignedUrl(s3Client, putObjectCommand);
     }
 
     return async (requestContext: McmaApiRequestContext) => {
@@ -39,7 +39,7 @@ function createPublishHandler(s3: S3): McmaApiRouteHandler {
         }
 
         logger?.debug("Checking version existence", module.version);
-        if (await versionExistsAsync(s3, module)) {
+        if (await versionExistsAsync(s3Client, module)) {
             requestContext.setResponseError(HttpStatusCode.Conflict, `Version ${module.version} already exists for module ${module.name}`);
             return;
         }
@@ -53,7 +53,7 @@ function createPublishHandler(s3: S3): McmaApiRouteHandler {
 }
 
 export class PublishRoute extends McmaApiRoute {
-    constructor(s3: S3) {
-        super("POST", "/modules/publish", createPublishHandler(s3));
+    constructor(s3Client: S3Client) {
+        super("POST", "/modules/publish", createPublishHandler(s3Client));
     }
 }

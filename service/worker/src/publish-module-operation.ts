@@ -1,4 +1,4 @@
-import { S3 } from "aws-sdk";
+import { CopyObjectCommand, DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Utils } from "@mcma/core";
 import { OperationHandler, ProviderCollection, WorkerRequest } from "@mcma/worker";
 import { Module } from "@local/common";
@@ -6,13 +6,11 @@ import { downloadZip, openAndReadZip, readTextFile } from "./helpers";
 
 const { ModuleStagingBucket, ModuleBucket } = process.env;
 
-type PublishModuleRequest = {
-    key: string;
-};
+type PublishModuleRequest = { key: string };
 
 export function createPublishModuleHandler(): OperationHandler {
-    const s3 = new S3();
-    return async (providerCollection: ProviderCollection, request: WorkerRequest) => {
+    const s3 = new S3Client({});
+    return async (_: ProviderCollection, request: WorkerRequest) => {
         const publishModuleRequest = <PublishModuleRequest>request.input;
         try {
             const { body, metadata } = await downloadZip(ModuleStagingBucket, publishModuleRequest.key);
@@ -64,17 +62,17 @@ export function createPublishModuleHandler(): OperationHandler {
             }
             request.logger.info(`Contents of module.json matches object key. Copying to key ${publishModuleRequest.key} in modules bucket ${ModuleBucket}...`);
 
-            await s3.copyObject({
+            await s3.send(new CopyObjectCommand({
                 CopySource: `/${ModuleStagingBucket}/${publishModuleRequest.key}`,
                 Bucket: ModuleBucket,
                 Key: publishModuleRequest.key,
                 ACL: "public-read",
                 ContentDisposition: "attachment; filename=\"" + publishModuleRequest.key.replace(/\//g, "_") + "\""
-            }).promise();
+            }));
             request.logger.info("Successfully copied to modules bucket.");
         } finally {
             try {
-                await s3.deleteObject({ Bucket: ModuleStagingBucket, Key: publishModuleRequest.key }).promise();
+                await s3.send(new DeleteObjectCommand({ Bucket: ModuleStagingBucket, Key: publishModuleRequest.key }));
             } catch (e) {
                 request.logger?.error(`Failed to delete object ${publishModuleRequest.key} from bucket ${ModuleStagingBucket}`);
             }

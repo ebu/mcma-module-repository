@@ -1,6 +1,6 @@
 def requiredVersionTerraform = "^1.0.0"
-def requiredVersionNodeJS = "^16.0.0"
-def requiredVersionTsc = "^4.0.0"
+def requiredVersionNodeJS = "^18.0.0"
+def requiredVersionTsc = "^5.0.0"
 
 allprojects {
 
@@ -16,8 +16,6 @@ allprojects {
             terraformExecutable = ["terraform"]
             tscExecutable = ["tsc"]
         }
-
-        awsAvailableLibraries = [".bin", "aws-sdk", "buffer", "dynamodb-doc", "events", "ieee754", "jmespath", "lodash", "punycode", "querystring", "url"]
     }
 }
 
@@ -143,7 +141,6 @@ task verifyTsc {
 }
 
 task build {
-    dependsOn "auth:build"
     dependsOn "service:build"
     dependsOn "website:build"
 }

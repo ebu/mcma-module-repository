@@ -50,7 +50,7 @@ resource "aws_lambda_function" "staging_bucket_trigger" {
   role             = aws_iam_role.staging_bucket_trigger_role.arn
   handler          = "index.handler"
   source_code_hash = filebase64sha256("../service/staging-bucket-trigger/build/dist/lambda.zip")
-  runtime          = "nodejs14.x"
+  runtime          = "nodejs18.x"
   timeout          = "30"
   memory_size      = "3008"
 

@@ -10,7 +10,7 @@ resource "aws_lambda_function" "openid_config" {
   handler          = local.openid_config_handler
   role             = aws_iam_role.lambda_role.arn
   source_code_hash = filebase64sha256(local.openid_config_zip)
-  runtime          = "nodejs14.x"
+  runtime          = "nodejs18.x"
   timeout          = "30"
   memory_size      = "3008"
 

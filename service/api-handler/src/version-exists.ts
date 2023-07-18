@@ -1,14 +1,14 @@
-import { S3 } from "aws-sdk";
+import { HeadObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { HttpStatusCode } from "@mcma/api";
 import { McmaException } from "@mcma/core";
 import { Module } from "@local/common";
 
 const { ModuleBucket } = process.env;
 
-export async function versionExistsAsync(s3: S3, module: Module): Promise<boolean> {
+export async function versionExistsAsync(s3Client: S3Client, module: Module): Promise<boolean> {
     const key = module.key + ".zip";
     try {
-        await s3.headObject({ Bucket: ModuleBucket, Key: key }).promise();
+        await s3Client.send(new HeadObjectCommand({ Bucket: ModuleBucket, Key: key }));
         return true;
     } catch (error) {
         if (error.statusCode !== HttpStatusCode.NotFound) {

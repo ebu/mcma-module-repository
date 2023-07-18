@@ -1,38 +1,16 @@
-import * as AWS from "aws-sdk";
+import { S3Client } from "@aws-sdk/client-s3";
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda";
-import { AwsV4Authenticator } from "@mcma/aws-client";
 import { AwsCloudWatchLoggerProvider } from "@mcma/aws-logger";
 import { ApiGatewayApiController } from "@mcma/aws-api-gateway";
-import { ModuleSearchClient } from "@local/common";
+import { getSearchClient } from "@local/common";
 
 import { getRoutes } from "./routes";
 
-const s3 = new AWS.S3();
-const {
-    ElasticEndpoint,
-    LatestVersionsElasticIndex,
-    PreviousVersionsElasticIndex
-} = process.env;
+const s3Client = new S3Client({});
 
 const loggerProvider = new AwsCloudWatchLoggerProvider("module-repository-api-handler", process.env.LogGroupName);
-
-const elasticAuthContext = {
-    accessKey: AWS.config.credentials.accessKeyId,
-    secretKey: AWS.config.credentials.secretAccessKey,
-    sessionToken: AWS.config.credentials.sessionToken,
-    region: AWS.config.region,
-    serviceName: "es"
-};
-
-const searchClient = new ModuleSearchClient({
-    endpoint: ElasticEndpoint,
-    latestVersionsIndex: LatestVersionsElasticIndex,
-    previousVersionsIndex: PreviousVersionsElasticIndex,
-    authenticator: new AwsV4Authenticator(elasticAuthContext),
-    logger: loggerProvider.get()
-});
-
-const restController = new ApiGatewayApiController(getRoutes(searchClient, s3), loggerProvider);
+const searchClient = await getSearchClient(loggerProvider);
+const restController = new ApiGatewayApiController(getRoutes(searchClient, s3Client), loggerProvider);
 
 export async function handler(event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> {
     const logger = loggerProvider.get(context.awsRequestId);

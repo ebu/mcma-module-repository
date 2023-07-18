@@ -1,10 +1,10 @@
-include "auth",
-        "auth:push-cli-tokens",
-        "deployment",
+include "deployment",
         "service",
         "service:api-handler",
         "service:common",
         "service:module-bucket-trigger",
+        "service:push-cli-tokens",
         "service:staging-bucket-trigger",
+        "service:token-receiver",
         "service:worker",
         "website"

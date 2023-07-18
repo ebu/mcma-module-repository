@@ -1,10 +1,10 @@
-import * as AWS from "aws-sdk";
+import { ApiGatewayManagementApiClient, PostToConnectionCommand } from "@aws-sdk/client-apigatewaymanagementapi";
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda";
 import { AwsCloudWatchLoggerProvider } from "@mcma/aws-logger";
 
 const { AuthWsDomain, LogGroupName } = process.env;
 
-const apiGatewayManagement = new AWS.ApiGatewayManagementApi({
+const apiGatewayManagement = new ApiGatewayManagementApiClient({
     endpoint: `https://${AuthWsDomain}`
 });
 const loggerProvider = new AwsCloudWatchLoggerProvider("module-repository-cli-tokens", LogGroupName);
@@ -41,13 +41,13 @@ export async function handler(event: APIGatewayProxyEvent, context: Context): Pr
             };
         }
 
-        await apiGatewayManagement.postToConnection({
+        await apiGatewayManagement.send(new PostToConnectionCommand({
             ConnectionId: connectionId,
             Data: JSON.stringify({
                 accessToken,
                 idToken
             })
-        }).promise();
+        }));
 
         return {
             statusCode: 200,

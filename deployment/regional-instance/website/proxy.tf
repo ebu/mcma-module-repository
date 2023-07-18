@@ -105,12 +105,12 @@ resource "aws_iam_role_policy_attachment" "cloudwatch_access" {
 }
 
 resource "aws_lambda_function" "push_cli_tokens" {
-  filename         = "../auth/push-cli-tokens/build/dist/lambda.zip"
+  filename         = "../service/push-cli-tokens/build/dist/lambda.zip"
   function_name    = "module-repository-auth-push-cli-tokens-${var.region}-${var.environment_type}"
   handler          = "index.handler"
-  source_code_hash = filebase64sha256("../auth/push-cli-tokens/build/dist/lambda.zip")
+  source_code_hash = filebase64sha256("../service/push-cli-tokens/build/dist/lambda.zip")
   role             = aws_iam_role.push_cli_tokens.arn
-  runtime          = "nodejs14.x"
+  runtime          = "nodejs18.x"
   timeout          = "30"
   memory_size      = "3008"
 

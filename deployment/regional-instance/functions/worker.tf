@@ -84,7 +84,7 @@ resource "aws_lambda_function" "worker" {
   role             = aws_iam_role.worker_role.arn
   handler          = "index.handler"
   source_code_hash = filebase64sha256("../service/worker/build/dist/lambda.zip")
-  runtime          = "nodejs14.x"
+  runtime          = "nodejs18.x"
   timeout          = "30"
   memory_size      = "3008"
 

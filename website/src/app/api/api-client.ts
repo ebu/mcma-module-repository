@@ -1,6 +1,6 @@
 import type { ModuleSearchParams, ModuleSearchResults } from "./model";
 import type { Observable } from "rxjs";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 
 export const ApiUrl = "https://modules.mcma.io/api";
@@ -11,12 +11,14 @@ export class ApiClient {
   }
 
   search(params: ModuleSearchParams): Observable<ModuleSearchResults> {
-    const params = {
-      q: params.q,
-      namespace: params.namespace,
-      includePreRelease: params.includePreRelease?.toString() ?? false
-    };
+    const httpParams = new HttpParams();
+    httpParams.append("q", params.q);
+    httpParams.append("includePreRelease", params.includePreRelease?.toString() ?? false);
     
-    return this.httpClient.get<ModuleSearchResults>(`${ApiUrl}/modules`, { params });
+    if (params.namespace) {
+      httpParams.append("q", params.namespace);
+    }
+    
+    return this.httpClient.get<ModuleSearchResults>(`${ApiUrl}/modules`, { params: httpParams });
   }
 }

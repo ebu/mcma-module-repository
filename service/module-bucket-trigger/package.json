@@ -4,19 +4,19 @@
     "description": "S3 trigger that processes ",
     "private": true,
     "engines": {
-        "node": "^10.16.3"
+        "node": "^18.0.0"
     },
     "main": "src/index.js",
     "license": "Apache-2.0",
     "dependencies": {
-        "@mcma/aws-logger": "0.14.8",
-        "@mcma/core": "0.14.8",
-        "@mcma/worker-invoker": "0.14.8",
-        "aws-sdk": "^2.1000.0"
+        "@aws-sdk/client-lambda": "^3.300.0",
+        "@mcma/aws-logger": "0.16.1",
+        "@mcma/core": "0.16.1",
+        "@mcma/worker-invoker": "0.16.1"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.70",
-        "@types/node": "^12.12.19",
+        "@types/node": "^18.0.0",
         "@types/uuid": "7.0.3"
     }
 }

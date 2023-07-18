@@ -1,25 +1,29 @@
 import * as fs from "fs";
 import * as yauzl from "yauzl-promise";
-import { S3 } from "aws-sdk"
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { v4 as uuidv4 } from "uuid";
 import { McmaException } from "@mcma/core";
 
-const s3 = new S3();
+const s3 = new S3Client({});
 
-export async function downloadZip(bucket: string, key: string): Promise<{ body: S3.Body, metadata: S3.Metadata }> {
-    const getResponse = await s3.getObject({ Bucket: bucket, Key: key }).promise();
+export async function downloadZip(bucket: string, key: string): Promise<{ body: Uint8Array, metadata: Record<string, string> }> {
+    const getResponse = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
     if (!getResponse.Body) {
         throw new McmaException(`Failed to download module package from bucket ${bucket} with key ${key}`);
     }
 
-    return { body: getResponse.Body, metadata: getResponse.Metadata };
+    const metadata = getResponse.Metadata;
+    const body = await getResponse.Body.transformToByteArray();
+
+    return { body, metadata };
 }
 
-export async function openZip(key: string, body: S3.Body): Promise<{ tempZipPath: string, zipFile: yauzl.ZipFile }> {
+export async function openZip(key: string, body: Uint8Array): Promise<{ tempZipPath: string, zipFile: yauzl.ZipFile }> {
     const tempDir = `/tmp/${uuidv4()}`;
     await fs.promises.mkdir(tempDir, { recursive: true });
 
     const tempFilePath = `${tempDir}/${key.replace(/\//g, "-")}`;
+
     await fs.promises.writeFile(tempFilePath, body);
 
     return {
@@ -36,7 +40,7 @@ export async function readZip(zipFile: yauzl.ZipFile, handleEntry: (entry: yauzl
     }
 }
 
-export async function openAndReadZip(key: string, body: S3.Body, handleEntry: (entry: yauzl.Entry) => Promise<boolean>): Promise<void> {
+export async function openAndReadZip(key: string, body: Uint8Array, handleEntry: (entry: yauzl.Entry) => Promise<boolean>): Promise<void> {
     const { tempZipPath, zipFile } = await openZip(key, body);
     try {
         await readZip(zipFile, handleEntry);

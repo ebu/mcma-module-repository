@@ -5,7 +5,6 @@ task copyNodeModules(type: Copy) {
     mustRunAfter tsc
     from "node_modules"
     into "build/staging/node_modules"
-    exclude awsAvailableLibraries
 }
 
 task build(type: Zip) {
