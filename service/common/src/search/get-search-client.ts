@@ -2,7 +2,7 @@ import { fromEnv } from "@aws-sdk/credential-providers";
 import { AwsV4Authenticator } from "@mcma/aws-client";
 import { LoggerProvider } from "@mcma/core";
 
-import { ModuleSearchClient } from "./module-search-client";
+import { ModuleSearchClient } from "./module-search-client.js";
 
 const {
     ElasticEndpoint,

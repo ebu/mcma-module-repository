@@ -1,5 +1,5 @@
-import { ModuleProperties } from "../module";
-import { Version } from "../version";
+import { ModuleProperties } from "../module.js";
+import { Version } from "../version.js";
 
 export interface ModuleSearchData extends ModuleProperties {
     fullyQualifiedName: string;

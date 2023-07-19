@@ -1,5 +1,6 @@
 {
     "name": "module-repository-api-handler",
+    "type": "module",
     "version": "0.0.0",
     "description": "API gateway request handler for Module Repository",
     "private": true,

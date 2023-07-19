@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "module": "NodeNext",
-        "moduleResolution": "node",
+        "module": "ES2022",
+        "moduleResolution": "NodeNext",
         "target": "ES2022",
         "downlevelIteration": true,
         "noImplicitAny": true,

@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 4.34.0"
+      version = ">= 5.8.0"
     }
   }
 }
@@ -14,6 +14,11 @@ locals {
   default_tags = {
     Application = "module-repository"
   }
+}
+
+provider "aws" {
+  alias   = "global"
+  profile = var.profile
 }
 
 provider "aws" {
@@ -28,9 +33,12 @@ provider "aws" {
   region  = "eu-west-1"
 }
 
-data "aws_caller_identity" "current" {}
+data "aws_caller_identity" "current" {
+  provider     = aws.global
+}
 
 data "aws_route53_zone" "primary" {
+  provider     = aws.global
   name         = var.zone_name
   private_zone = false
 }

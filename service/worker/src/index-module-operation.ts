@@ -1,6 +1,6 @@
 import { OperationHandler } from "@mcma/worker";
 import { Module, ModuleSearchClient, ModuleProperties } from "@local/common";
-import { downloadAndReadZip, readTextFile } from "./helpers";
+import { downloadAndReadZip, readTextFile } from "./helpers.js";
 
 const { ModuleBucket, ModulesBaseUrl } = process.env;
 

@@ -1,5 +1,6 @@
 {
     "name": "module-repository-s3-trigger",
+    "type": "module",
     "version": "0.0.0",
     "description": "S3 trigger that processes ",
     "private": true,

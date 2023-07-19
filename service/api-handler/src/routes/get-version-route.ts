@@ -2,7 +2,7 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { McmaApiRequestContext, McmaApiRoute, McmaApiRouteHandler } from "@mcma/api";
 import { buildS3Url } from "@mcma/aws-s3";
 import { ModuleSearchClient } from "@local/common";
-import { versionExistsAsync } from "../version-exists";
+import { versionExistsAsync } from "../version-exists.js";
 
 const { ModuleBucket } = process.env;
 

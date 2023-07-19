@@ -1,5 +1,5 @@
 import { McmaException } from "@mcma/core";
-import { PreReleaseStage } from "./pre-release-stage";
+import { PreReleaseStage } from "./pre-release-stage.js";
 
 export class Version {
     constructor(

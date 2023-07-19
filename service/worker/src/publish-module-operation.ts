@@ -2,7 +2,7 @@ import { CopyObjectCommand, DeleteObjectCommand, S3Client } from "@aws-sdk/clien
 import { Utils } from "@mcma/core";
 import { OperationHandler, ProviderCollection, WorkerRequest } from "@mcma/worker";
 import { Module } from "@local/common";
-import { downloadZip, openAndReadZip, readTextFile } from "./helpers";
+import { downloadZip, openAndReadZip, readTextFile } from "./helpers.js";
 
 const { ModuleStagingBucket, ModuleBucket } = process.env;
 

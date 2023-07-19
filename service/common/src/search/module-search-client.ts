@@ -1,19 +1,19 @@
 import { HttpClient } from "@mcma/client";
 import { Logger } from "@mcma/core";
-import { Module } from "../module";
-import { Version } from "../version";
-import { ModuleSearchClientOptions } from "./module-search-client-options";
-import { ModuleSearchCriteria, defaultModuleSearchCriteria } from "./module-search-criteria";
-import { ModuleSearchData } from "./module-search-data";
-import { ModuleSearchResults } from "./module-search-results";
-import { normalizeProvider } from "../supported-provider";
-import * as Elastic from "./elastic-types";
+import { Module } from "../module.js";
+import { Version } from "../version.js";
+import { ModuleSearchClientOptions } from "./module-search-client-options.js";
+import { ModuleSearchCriteria, defaultModuleSearchCriteria } from "./module-search-criteria.js";
+import { ModuleSearchData } from "./module-search-data.js";
+import { ModuleSearchResults } from "./module-search-results.js";
+import { normalizeProvider } from "../supported-provider.js";
+import * as Elastic from "./elastic-types.js";
 import {
     descendingVersionSort,
     getElasticId,
     getPreReleaseBoolQuery,
     ID_DELIMITER, moduleToSearchData, searchDataToModule
-} from "./helpers";
+} from "./helpers.js";
 
 export class ModuleSearchClient {
     private readonly httpClient: HttpClient;

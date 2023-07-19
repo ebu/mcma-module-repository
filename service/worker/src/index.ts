@@ -6,8 +6,8 @@ import { AwsCloudWatchLoggerProvider } from "@mcma/aws-logger";
 import { awsV4Auth } from "@mcma/aws-client";
 import { getSearchClient } from "@local/common";
 
-import { createPublishModuleHandler } from "./publish-module-operation";
-import { createIndexModuleHandler } from "./index-module-operation";
+import { createPublishModuleHandler } from "./publish-module-operation.js";
+import { createIndexModuleHandler } from "./index-module-operation.js";
 
 const authProvider = new AuthProvider().add(awsV4Auth());
 const dbTableProvider = new DynamoDbTableProvider();

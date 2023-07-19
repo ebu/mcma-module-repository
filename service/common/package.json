@@ -1,5 +1,6 @@
 {
     "name": "@local/common",
+    "type": "module",
     "version": "0.0.0",
     "description": "Local common lib for MCMA Module Repository",
     "private": true,

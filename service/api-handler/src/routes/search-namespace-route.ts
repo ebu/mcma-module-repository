@@ -1,6 +1,6 @@
 import { McmaApiRequestContext, McmaApiRoute, McmaApiRouteHandler } from "@mcma/api";
 import { ModuleSearchClient } from "@local/common";
-import { extractSearchCriteria } from "../extract-search-criteria";
+import { extractSearchCriteria } from "../extract-search-criteria.js";
 
 function createSearchNamespaceHandler(searchClient: ModuleSearchClient): McmaApiRouteHandler {
     return async (requestContext: McmaApiRequestContext) => {

@@ -4,13 +4,14 @@ import { AwsCloudWatchLoggerProvider } from "@mcma/aws-logger";
 import { ApiGatewayApiController } from "@mcma/aws-api-gateway";
 import { getSearchClient } from "@local/common";
 
-import { getRoutes } from "./routes";
+import { getRoutes } from "./routes/index.js";
 
 const s3Client = new S3Client({});
 
 const loggerProvider = new AwsCloudWatchLoggerProvider("module-repository-api-handler", process.env.LogGroupName);
 const searchClient = await getSearchClient(loggerProvider);
-const restController = new ApiGatewayApiController(getRoutes(searchClient, s3Client), loggerProvider);
+const routes = getRoutes(searchClient, s3Client);
+const restController = new ApiGatewayApiController(routes, loggerProvider);
 
 export async function handler(event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> {
     const logger = loggerProvider.get(context.awsRequestId);
@@ -19,7 +20,10 @@ export async function handler(event: APIGatewayProxyEvent, context: Context): Pr
         logger.debug(event);
         logger.debug(context);
 
-        return await restController.handleRequest(event, context);
+        const eventWithPath = Object.assign({}, event, { path: "/" + event.pathParameters.proxy });
+        logger.debug(eventWithPath);
+
+        return await restController.handleRequest(eventWithPath, context);
     } finally {
         logger.functionEnd(context.awsRequestId);
         await loggerProvider.flush(Date.now() + context.getRemainingTimeInMillis() - 5000);

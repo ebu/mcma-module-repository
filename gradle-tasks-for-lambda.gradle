@@ -7,8 +7,15 @@ task copyNodeModules(type: Copy) {
     into "build/staging/node_modules"
 }
 
+task copyPackageJson(type: Copy) {
+    dependsOn npmInstall
+    mustRunAfter tsc
+    from "package.json"
+    into "build/staging"
+}
+
 task build(type: Zip) {
-    dependsOn copyNodeModules, tsc
+    dependsOn copyNodeModules, copyPackageJson, tsc
     from "build/staging"
     archiveFileName = "lambda.zip"
     destinationDirectory = file("build/dist")

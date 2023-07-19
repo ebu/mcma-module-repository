@@ -1,4 +1,4 @@
-import { normalizeProvider, SupportedProvider } from "./supported-provider";
+import { normalizeProvider, SupportedProvider } from "./supported-provider.js";
 import { McmaException, McmaResource, McmaResourceProperties, Utils } from "@mcma/core";
 
 export interface ModuleProperties extends McmaResourceProperties {
@@ -33,6 +33,8 @@ export class Module extends McmaResource implements ModuleProperties {
 
     constructor(props: ModuleProperties) {
         super("Module", props);
+
+        Object.assign(this, props);
 
         Utils.checkProperty(this, "namespace", "string", true);
         Utils.checkProperty(this, "name", "string", true);

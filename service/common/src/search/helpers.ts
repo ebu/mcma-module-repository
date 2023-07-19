@@ -1,8 +1,8 @@
-import { Module } from "../module";
-import { ModuleSearchData } from "./module-search-data";
-import * as Elastic from "./elastic-types";
-import { Version } from "../version";
-import { normalizeProvider } from "../supported-provider";
+import { Module } from "../module.js";
+import { ModuleSearchData } from "./module-search-data.js";
+import * as Elastic from "./elastic-types.js";
+import { Version } from "../version.js";
+import { normalizeProvider } from "../supported-provider.js";
 
 export const ID_DELIMITER = "_";
 
@@ -22,6 +22,8 @@ export function searchDataToModule(searchData: ModuleSearchData): Module {
     delete searchData.isPreRelease;
     delete searchData.hasPreRelease;
     delete searchData.parsedVersion;
+
+    console.log(searchData);
 
     return new Module(searchData);
 }

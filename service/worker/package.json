@@ -1,5 +1,6 @@
 {
     "name": "module-repository-worker",
+    "type": "module",
     "version": "0.0.0",
     "description": "MCMA Worker for Module Repository",
     "private": true,

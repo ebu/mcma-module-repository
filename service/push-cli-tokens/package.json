@@ -1,5 +1,6 @@
 {
     "name": "module-repository-auth-push-cli-tokens",
+    "type": "module",
     "version": "0.0.0",
     "description": "Pushes CLI tokens to a Websocket connection",
     "private": true,

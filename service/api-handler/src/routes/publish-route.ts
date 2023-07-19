@@ -4,7 +4,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Utils } from "@mcma/core";
 import { HttpStatusCode, McmaApiRequestContext, McmaApiRoute, McmaApiRouteHandler } from "@mcma/api";
 import { Module, ModuleProperties} from "@local/common"
-import { versionExistsAsync } from "../version-exists";
+import { versionExistsAsync } from "../version-exists.js";
 
 const { ModuleStagingBucket } = process.env;
 

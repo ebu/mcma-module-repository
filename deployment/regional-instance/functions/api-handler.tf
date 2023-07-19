@@ -288,11 +288,18 @@ resource "aws_api_gateway_stage" "module_repository_api_stage" {
     aws_api_gateway_integration.module_repository_api_method_integration,
     aws_api_gateway_integration.module_repository_options_integration,
     aws_api_gateway_integration_response.module_repository_options_integration_response,
+      aws_api_gateway_deployment.module_repository_deployment
   ]
 
   stage_name    = var.environment_type
   deployment_id = aws_api_gateway_deployment.module_repository_deployment.id
   rest_api_id   = aws_api_gateway_rest_api.module_repository_api.id
+
+  lifecycle {
+    replace_triggered_by = [
+      aws_api_gateway_deployment.module_repository_deployment
+    ]
+  }
 }
 
 resource "aws_lambda_permission" "module_repository_api_lambda_permission" {
@@ -304,15 +311,35 @@ resource "aws_lambda_permission" "module_repository_api_lambda_permission" {
 }
 
 resource "aws_api_gateway_base_path_mapping" "regional_domain_name_mapping" {
+  depends_on = [
+    aws_api_gateway_stage.module_repository_api_stage
+  ]
+
   api_id      = aws_api_gateway_rest_api.module_repository_api.id
   stage_name  = aws_api_gateway_stage.module_repository_api_stage.stage_name
   domain_name = local.regional_domain_name
   base_path   = "api"
+
+  lifecycle {
+    replace_triggered_by = [
+      aws_api_gateway_stage.module_repository_api_stage
+    ]
+  }
 }
 
 resource "aws_api_gateway_base_path_mapping" "global_domain_name_mapping" {
+  depends_on = [
+    aws_api_gateway_stage.module_repository_api_stage
+  ]
+
   api_id      = aws_api_gateway_rest_api.module_repository_api.id
   stage_name  = aws_api_gateway_stage.module_repository_api_stage.stage_name
   domain_name = local.global_domain_name
   base_path   = "api"
+
+  lifecycle {
+    replace_triggered_by = [
+      aws_api_gateway_stage.module_repository_api_stage
+    ]
+  }
 }

@@ -1,4 +1,4 @@
-import { Module } from "../module";
+import { Module } from "../module.js";
 
 export interface ModuleSearchResults {
     results: Module[];
