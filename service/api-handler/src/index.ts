@@ -5,12 +5,15 @@ import { ApiGatewayApiController } from "@mcma/aws-api-gateway";
 import { getSearchClient } from "@local/common";
 
 import { getRoutes } from "./routes/index.js";
+import { DynamoDbTableProvider } from "@mcma/aws-dynamodb";
 
 const s3Client = new S3Client({});
 
 const loggerProvider = new AwsCloudWatchLoggerProvider("module-repository-api-handler", process.env.LogGroupName);
+const dynamoDbTableProvider = new DynamoDbTableProvider();
+
 const searchClient = await getSearchClient(loggerProvider);
-const routes = getRoutes(searchClient, s3Client);
+const routes = getRoutes(searchClient, s3Client, dynamoDbTableProvider);
 const restController = new ApiGatewayApiController(routes, loggerProvider);
 
 export async function handler(event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> {

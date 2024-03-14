@@ -1,3 +1,4 @@
+import { NamespaceProperties } from "./namespace.js";
 import { normalizeProvider, SupportedProvider } from "./supported-provider.js";
 import { McmaException, McmaResource, McmaResourceProperties, Utils } from "@mcma/core";
 

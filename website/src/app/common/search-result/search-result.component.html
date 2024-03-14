@@ -14,7 +14,7 @@
     <div class="flex justify-between ml-2 my-1 items-center">
       <div class="flex text-white items-center">
         <div *ngFor="let provider of module?.providers" class="flex">
-          <span class="ml-2 px-2 bg-customGray-lighter text-sm rounded-tl rounded-bl">{{ provider.name }}</span>
+          <span class="provider {{provider.name}} flex justify-center items-center ml-2 px-2 bg-customGray-lighter text-sm rounded-tl rounded-bl"><!--{{ provider.name }}--><img src="../../../assets/{{provider.name}}.png"/></span>
           <span
             class="mr-2 px-2 bg-customPurple-darkest text-sm rounded-tr rounded-br">v{{ provider.latestVersion }}</span>
         </div>

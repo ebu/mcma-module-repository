@@ -108,3 +108,17 @@ module "eu_west" {
   region             = "eu-west-1"
   replication_region = "us-east-1"
 }
+
+resource "aws_dynamodb_global_table" "resources_table" {
+  provider = aws.us_east
+  profile  = var.profile
+
+  name = var.table_name
+  
+  replica {
+    region_name = "us-east-1"
+  }
+  replica {
+    region_name = "eu-west-1"
+  }
+}

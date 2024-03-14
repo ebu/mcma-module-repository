@@ -52,3 +52,6 @@ variable cert_arn {
 variable cognito_user_pool_arn {
   type = string
 }
+variable table_name {
+  type = string
+}

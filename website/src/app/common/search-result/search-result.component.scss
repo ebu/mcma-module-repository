@@ -1,0 +1,12 @@
+.provider {
+    img {
+        width: 18px;
+        height: 18px;
+    }
+    &.AWS {
+        img {
+            width: 18px;
+            height: 12px;
+        }
+    }
+}

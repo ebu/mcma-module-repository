@@ -100,6 +100,7 @@ resource "aws_lambda_function" "api_handler" {
       ElasticEndpoint              = var.elastic_endpoint
       LatestVersionsElasticIndex   = var.elastic_latest_versions_index
       PreviousVersionsElasticIndex = var.elastic_previous_versions_index
+      MCMA_TABLE_NAME              = var.table_name
     }
   }
 

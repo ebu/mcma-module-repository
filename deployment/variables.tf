@@ -40,3 +40,8 @@ variable github_client_secret {
   type      = string
   sensitive = true
 }
+
+variable table_name {
+  type    = string
+  default = "module-repository"
+}

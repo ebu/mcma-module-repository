@@ -9,6 +9,13 @@ terraform {
   }
 }
 
+module "dynamodb" {
+  source = "./dynamodb"
+
+  environment_type   = var.environment_type
+  default_tags       = var.default_tags
+}
+
 module "buckets" {
   source = "./buckets"
 
@@ -81,6 +88,7 @@ module "functions" {
   log_group        = var.log_group
   zone_id          = var.zone_id
   cert_arn         = var.cert_arn
+  table_name       = var.table_name
 
   cognito_user_pool_arn           = module.auth.user_pool_arn
   module_bucket                   = module.buckets.module_bucket
